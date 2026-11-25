@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ElectroAventura Lab v3 · Electrónica Analógica y Sistemas Digitales (20 + 20 Mundos)</title>
+<style>
+:root{
+  --ink:#0f2942;--mut:#54718d;--line:#d4e4f4;--soft:#eef5fc;--bg:#f6fafe;--card:#ffffff;
+  --acc:#1b5fa7;--acc2:#2a78c8;--tint:#dcebfa;--tint2:#c4ddf6;--onacc:#ffffff;
+  --warn:#9a5b13;--warnbg:#fff6e5;--warnline:#f3d299;
+  --crit:#b91c1c;--critbg:#fef2f2;--critline:#fecaca;
+  --shadow:0 1px 2px rgba(15,41,66,.05),0 10px 30px rgba(15,41,66,.06);
+  color-scheme:light;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --ink:#e5f0fa;--mut:#94b3d0;--line:#203a54;--soft:#102133;--bg:#0a1521;--card:#0e1d2d;
+    --acc:#7bb8f5;--acc2:#599fe6;--tint:#162d46;--tint2:#1f3e5e;--onacc:#081524;
+    --warn:#f5be76;--warnbg:#291f10;--warnline:#59411b;
+    --crit:#f87171;--critbg:#2c1215;--critline:#632229;
+    --shadow:0 1px 2px rgba(0,0,0,.35);color-scheme:dark
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Inter","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--tint2);outline-offset:1px}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px max(16px,calc((100% - 1280px)/2));background:var(--card);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:42px;height:42px;border-radius:12px;background:var(--tint);display:grid;place-items:center;font-size:20px;font-weight:800;color:var(--acc)}
+.brand b{font-size:19px;letter-spacing:-.2px;display:block;line-height:1.1}
+.brand small{color:var(--mut)}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{background:var(--tint);color:var(--acc);border-radius:999px;padding:6px 14px;font-weight:700;font-size:13px}
+
+.wrap{max-width:1280px;margin:0 auto;padding:20px 16px 44px}
+.hero{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:14px}
+.hero h1{margin:0;font-size:clamp(22px,3vw,30px);letter-spacing:-.5px}
+.hero p{margin:4px 0 0;color:var(--mut)}
+.prog{min-width:260px;flex:0 1 350px}
+.prog div:first-child{display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:var(--mut)}
+.track{height:8px;border-radius:99px;background:var(--tint);margin-top:8px;overflow:hidden}
+.fill{height:100%;width:0;background:var(--acc2);border-radius:99px;transition:width .45s}
+
+.track-switch{display:inline-flex;border:1.5px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card);margin-bottom:16px}
+.track-switch button{border:0;background:transparent;padding:9px 18px;font-weight:700;font-size:14px;color:var(--mut)}
+.track-switch button+button{border-left:1.5px solid var(--line)}
+.track-switch button.on{background:var(--acc);color:var(--onacc)}
+
+.layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:16px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow);min-width:0}
+.card h2{margin:0 0 10px;font-size:13px;letter-spacing:.8px;text-transform:uppercase;color:var(--mut)}
+
+.worlds{max-height:620px;overflow-y:auto;padding-right:4px}
+.world{display:flex;align-items:center;gap:9px;width:100%;text-align:left;border:0;background:transparent;border-radius:12px;padding:7px 10px;margin-bottom:3px;font-size:13px}
+.world:hover{background:var(--soft)}
+.world.on{background:var(--tint);color:var(--acc);font-weight:700}
+.world.ok .num{background:var(--tint2);border-color:var(--tint2);color:var(--acc)}
+.num{flex:none;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--tint2);display:grid;place-items:center;font-size:11.5px;font-weight:700;color:var(--mut)}
+.world.on .num{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.world small{margin-left:auto;color:var(--mut);font-weight:600;white-space:nowrap}
+
+.content{display:grid;gap:16px;min-width:0}
+.mhead{display:flex;justify-content:space-between;gap:12px;align-items:start}
+.mhead h2{margin:0 0 4px;font-size:21px;text-transform:none;letter-spacing:-.3px;color:var(--ink)}
+.mhead p{margin:0;color:var(--mut)}
+.tag{background:var(--tint);color:var(--acc);border-radius:999px;padding:4px 12px;font-size:12px;font-weight:700;white-space:nowrap}
+
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 10px}
+.chip{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:600;color:var(--mut)}
+.chip.on{border-color:var(--acc);background:var(--acc);color:var(--onacc)}
+.chip.ok:not(.on){background:var(--tint);color:var(--acc);border-color:var(--tint2)}
+
+.goal{background:var(--soft);border-left:4px solid var(--acc2);border-radius:10px;padding:10px 14px;font-size:14.5px}
+.goal b{color:var(--acc)}
+.hint{min-height:20px;color:var(--mut);font-size:13.5px;margin-top:8px}
+
+.work{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:16px}
+.ph{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.ph h2{margin:0}
+.ph span{font-size:12px;color:var(--mut)}
+
+.ctrl-box{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+.ctrl-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.ctrl-row:last-child{border-bottom:0;padding-bottom:0}
+.ctrl-row label{font-weight:600;font-size:13.5px}
+.sw{display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap}
+.sw button{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700}
+.sw button.active{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.range-wrap{display:flex;align-items:center;gap:8px;min-width:175px}
+.range-wrap input[type="range"]{flex:1;accent-color:var(--acc)}
+.range-val{font:700 12.5px ui-monospace,Consolas,monospace;color:var(--acc);min-width:64px;text-align:right}
+
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btn{border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:8px 14px;font-weight:650;font-size:13.5px}
+.btn:hover{background:var(--soft)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.btn.p:hover{background:var(--acc2);border-color:var(--acc2)}
+
+.feedback{margin-top:12px;background:var(--soft);border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.45;min-height:48px}
+.feedback.warn{background:var(--warnbg);border:1px solid var(--warnline);color:var(--warn);font-weight:600}
+.feedback.crit{background:var(--critbg);border:1px solid var(--critline);color:var(--crit);font-weight:700}
+.feedback.ok{background:var(--tint);border:1px solid var(--tint2);color:var(--acc);font-weight:600}
+
+.stage{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#ffffff}
+#bench{display:block;width:100%;aspect-ratio:4/3;height:auto}
+
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.metric{background:var(--soft);border-radius:12px;padding:8px 10px}
+.metric small{display:block;font-size:11.5px;color:var(--mut)}
+.metric b{font:700 14px ui-monospace,Consolas,monospace;color:var(--ink)}
+
+.table-mini,.seg-box{margin-top:10px;width:100%;border-collapse:collapse;font-size:12.5px}
+.table-mini th,.table-mini td{border:1px solid var(--line);padding:5px 8px;text-align:center}
+.table-mini th{background:var(--soft);color:var(--mut);font-size:11.5px;text-transform:uppercase}
+.table-mini tr.cur{background:var(--tint);font-weight:700;color:var(--acc)}
+.seg-box{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+
+.medals{display:flex;gap:8px;flex-wrap:wrap}
+.medal{background:var(--tint);color:var(--acc);border-radius:999px;padding:5px 12px;font-size:12px;font-weight:600}
+.empty{color:var(--mut);font-size:13.5px}
+.safety{font-size:13px;color:var(--mut);margin:0}
+.tog{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mut);user-select:none;cursor:pointer}
+
+.win{animation:pop .45s ease}
+@keyframes pop{0%{transform:scale(.98)}50%{transform:scale(1.012)}100%{transform:scale(1)}}
+
+@media(max-width:1040px){.work{grid-template-columns:1fr}}
+@media(max-width:860px){.layout{grid-template-columns:1fr}.worlds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));max-height:none}.pills{display:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <div class="logo">⚡</div>
+    <div><b>ElectroAventura Lab v3</b><small>Laboratorio Azul · 20 Mundos Análogos + 20 Mundos Digitales</small></div>
+  </div>
+  <div class="pills">
+    <span class="pill">★ <span id="stars">0</span> retos</span>
+    <span class="pill">Nivel <span id="level">1</span></span>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hero">
+    <div>
+      <h1>Laboratorio Avanzado de Electrónica y Sistemas Digitales</h1>
+      <p>Flujo proporcional dramático a baja resistencia, 20 mundos de electrónica análoga y 20 mundos de sistemas digitales.</p>
+    </div>
+    <div class="prog">
+      <div><span>Progreso total (40 mundos)</span><span id="ptxt">0 de 120 retos</span></div>
+      <div class="track"><div class="fill" id="pfill"></div></div>
+    </div>
+  </div>
+
+  <div class="track-switch" role="tablist" aria-label="Tipo de electrónica">
+    <button type="button" id="tabAnalog" class="on">Electrónica Análoga (20 mundos)</button>
+    <button type="button" id="tabDigital">Sistemas Digitales (20 mundos)</button>
+  </div>
+
+  <div class="layout">
+    <aside class="card">
+      <h2 id="sideTitle">Mundos análogos (20)</h2>
+      <div class="worlds" id="worlds"></div>
+    </aside>
+
+    <section class="content">
+      <div class="card" id="mission">
+        <div class="mhead">
+          <div><h2 id="mt"></h2><p id="md"></p></div>
+          <span class="tag" id="lvl"></span>
+        </div>
+        <div class="chips" id="chips"></div>
+        <div class="goal" id="goal"></div>
+        <div class="hint" id="hint" aria-live="polite"></div>
+      </div>
+
+      <div class="work">
+        <section class="card">
+          <div class="ph"><h2>Controles</h2><span id="ctrlSub">Laboratorio seguro</span></div>
+          <div class="ctrl-box" id="controls"></div>
+          <div class="row">
+            <button class="btn p" id="checkBtn">✓ Comprobar reto</button>
+            <button class="btn" id="hintBtn">💡 Pista</button>
+            <button class="btn" id="resetBtn">Reiniciar</button>
+          </div>
+          <div class="feedback" id="feedback">Ajusta los parámetros y observa cómo responde el circuito.</div>
+        </section>
+
+        <section class="card">
+          <div class="ph"><h2>Visualizador de circuito</h2><span id="modeTag">Análogo</span></div>
+          <div class="stage"><canvas id="bench" width="800" height="600" aria-label="Simulador de circuito"></canvas></div>
+          <div class="metrics">
+            <div class="metric"><small id="m1Lbl">Corriente (I)</small><b id="m1Val">0.0 mA</b></div>
+            <div class="metric"><small id="m2Lbl">Elemento / Estado</small><b id="m2Val">Reposo</b></div>
+            <div class="metric"><small id="m3Lbl">Magnitud / Salida</small><b id="m3Val">0.0 V</b></div>
+          </div>
+          <div id="extraPanel"></div>
+          <div class="row">
+            <label class="tog"><input type="checkbox" id="flowck" checked> Ver flujo de corriente / señal</label>
+          </div>
+        </section>
+      </div>
+
+      <section class="card">
+        <div class="ph"><h2>Medallas ganadas</h2><span id="mcount">0 de 40</span></div>
+        <div class="medals" id="medals"></div>
+      </section>
+
+      <section class="card">
+        <h2>Seguridad para edades 8+</h2>
+        <p class="safety">Cuando la resistencia baja mucho, la corriente crece de forma drástica y puede sobrecalentar o quemar componentes. En el simulador trabajamos con modelos seguros; en protoboard real usa fuentes de bajo voltaje (3.3 V – 5 V), resistencias limitadoras y nunca conectes a la red eléctrica doméstica.</p>
+      </section>
+    </section>
+  </div>
+</main>
+
+<script>
+'use strict';
+(() => {
+const $ = id => document.getElementById(id);
+
+/* =====================================================================
+   20 MUNDOS DE ELECTRÓNICA ANÁLOGA (cada uno con 3 retos = 60 retos)
+   ===================================================================== */
+const ANALOG_WORLDS = [
+  { n:"A1. Circuito cerrado e interruptor", d:"Comprende cómo una fuente envía corriente al cerrar el interruptor.", level:"Análogo · 8+", r:[
+    { t:"Cerrar circuito", g:"Cierra el interruptor para que circule corriente y encienda el LED.", h:"Pon Interruptor en Cerrado.", init:{ swA:0, res:330, load:"led" }, ok:s=>s.swA===1 && s.ledOn, msg:"¡Bien! Con el lazo cerrado circula corriente." },
+    { t:"Abrir circuito", g:"Abre el interruptor para detener el flujo (0.0 mA).", h:"Pon Interruptor en Abierto.", init:{ swA:1, res:330, load:"led" }, ok:s=>s.swA===0 && s.curr===0, msg:"¡Correcto! Lazo abierto = corriente cero." },
+    { t:"Encendido con 220 Ω", g:"Enciende el LED usando resistencia >= 220 Ω.", h:"Cierra el interruptor y sube R a >= 220 Ω.", init:{ swA:0, res:100, load:"led" }, ok:s=>s.swA===1 && s.res>=220 && s.ledOn, msg:"¡Excelente! Encendido estable y seguro." }
+  ]},
+  { n:"A2. Torrente cuando R es muy baja", d:"Observa cómo al bajar mucho R el flujo se vuelve torrencial y peligroso.", level:"Análogo · 8+", r:[
+    { t:"Detectar exceso de flujo", g:"La resistencia está en 10 Ω y el flujo es crítico (> 40 mA). Súbela a >= 220 Ω.", h:"Mueve Resistencia a 220 Ω o más.", init:{ swA:1, res:10, load:"led" }, ok:s=>s.swA===1 && s.res>=220 && s.curr<=25, msg:"¡Muy bien! Al subir R frenaste el torrente de corriente." },
+    { t:"Corriente entre 8 y 14 mA", g:"Ajusta la resistencia para lograr entre 8.0 mA y 14.0 mA.", h:"Prueba 220 Ω (~13.6 mA) o 330 Ω (~9.1 mA) con 5 V.", init:{ swA:1, res:20, load:"led" }, ok:s=>s.swA===1 && s.curr>=8 && s.curr<=14, msg:"¡Genial! Corriente controlada en el rango ideal." },
+    { t:"Corriente baja (< 7 mA)", g:"Sube R para que la corriente sea menor a 7.0 mA.", h:"Usa 470 Ω o 680 Ω.", init:{ swA:1, res:220, load:"led" }, ok:s=>s.swA===1 && s.curr>0 && s.curr<7, msg:"¡Bien hecho! Mayor resistencia = menor corriente." }
+  ]},
+  { n:"A3. Conectar un motor DC", d:"Conecta y controla un motor de corriente continua (DC) con giro visible.", level:"Análogo · 8+", r:[
+    { t:"Arrancar el motor", g:"Cambia la carga a Motor DC y ciérralo con R >= 100 Ω.", h:"Selecciona Motor DC y pon Interruptor en Cerrado.", init:{ swA:0, res:150, load:"motor" }, ok:s=>s.load==="motor" && s.swA===1 && s.res>=100, msg:"¡Motor en marcha! El rotor gira al circular corriente." },
+    { t:"Detener el motor", g:"Abre el interruptor para detener el giro del motor.", h:"Pon Interruptor en Abierto.", init:{ swA:1, res:150, load:"motor" }, ok:s=>s.load==="motor" && s.swA===0, msg:"¡Correcto! Sin corriente el motor se detiene." },
+    { t:"Giro suave controlado", g:"Mantén el motor encendido con corriente entre 10.0 mA y 25.0 mA.", h:"Ajusta R entre 150 Ω y 350 Ω con el interruptor cerrado.", init:{ swA:1, res:25, load:"motor" }, ok:s=>s.load==="motor" && s.swA===1 && s.curr>=10 && s.curr<=25, msg:"¡Excelente! Giro suave y protegido." }
+  ]},
+  { n:"A4. Circuito serie y paralelo", d:"Compara resistencias y ramas en serie y en paralelo.", level:"Análogo · 9+", r:[
+    { t:"Configurar serie", g:"Activa el modo Serie y cierra el interruptor con R >= 220 Ω.", h:"Elige Serie, cierra SW y deja R >= 220 Ω.", init:{ swA:0, res:100, topo:"series", load:"led" }, ok:s=>s.topo==="series" && s.swA===1 && s.res>=220, msg:"¡Bien! En serie la corriente pasa por ambos elementos." },
+    { t:"Configurar paralelo", g:"Activa el modo Paralelo y enciende el circuito con R >= 220 Ω.", h:"Elige Paralelo, cierra SW y deja R >= 220 Ω.", init:{ swA:0, res:100, topo:"parallel", load:"led" }, ok:s=>s.topo==="parallel" && s.swA===1 && s.res>=220, msg:"¡Genial! En paralelo la resistencia equivalente baja." },
+    { t:"Apagar en paralelo", g:"Abre el interruptor en modo Paralelo para dejar corriente en 0.0 mA.", h:"Pon SW en Abierto.", init:{ swA:1, res:330, topo:"parallel", load:"led" }, ok:s=>s.topo==="parallel" && s.swA===0 && s.curr===0, msg:"¡Listo! Circuito paralelo apagado." }
+  ]},
+  { n:"A5. Transformación Delta - Estrella (Δ - Y)", d:"Explora cómo una red Δ de 3 resistencias (Ra, Rb, Rc) se transforma en Y (R1, R2, R3).", level:"Análogo · 11+", r:[
+    { t:"Red Δ simétrica (300 Ω)", g:"Ajusta Ra, Rb y Rc en 300 Ω y observa R1 = R2 = R3 = 100 Ω.", h:"Con Δ de 300 Ω iguales, cada rama Y vale 300/3 = 100 Ω.", init:{ topo:"delta_y", ra:150, rb:150, rc:150 }, ok:s=>s.topo==="delta_y" && s.ra===300 && s.rb===300 && s.rc===300, msg:"¡Exacto! R_Y = R_Δ / 3 = 100 Ω en cada rama." },
+    { t:"Red Δ de 600 Ω", g:"Pon Ra, Rb y Rc en 600 Ω para obtener ramas Y de 200 Ω.", h:"Sube Ra, Rb y Rc a 600 Ω.", init:{ topo:"delta_y", ra:300, rb:300, rc:300 }, ok:s=>s.topo==="delta_y" && s.ra===600 && s.rb===600 && s.rc===600, msg:"¡Muy bien! 600 Ω en Δ equivale a 200 Ω por rama en Y." },
+    { t:"Rama R1 en estrella >= 120 Ω", g:"Ajusta los valores Δ para que R1 de la estrella sea >= 120 Ω.", h:"R1 = (Rb * Rc) / (Ra + Rb + Rc). Sube Rb y Rc.", init:{ topo:"delta_y", ra:300, rb:150, rc:150 }, ok:s=>s.topo==="delta_y" && s.ry1>=120, msg:"¡Excelente! Calculaste y ajustaste la equivalencia Δ-Y." }
+  ]},
+  { n:"A6. Teorema de Thévenin", d:"Reduce una red con fuente y divisor a un circuito equivalente Vth y Rth.", level:"Análogo · 11+", r:[
+    { t:"Vth = 2.5 V exactos", g:"Usa R1 = 330 Ω y R2 = 330 Ω para obtener Vth = 2.5 V.", h:"Con dos resistencias iguales (330 Ω y 330 Ω) a 5 V, Vth = 2.5 V.", init:{ topo:"thevenin", r1:220, r2:330 }, ok:s=>s.topo==="thevenin" && Math.abs(s.vth-2.5)<0.15, msg:"¡Bien! Divisor equilibrado: Vth = 2.5 V." },
+    { t:"Vth >= 3.3 V", g:"Ajusta R1 y R2 para lograr Vth mayor o igual a 3.3 V.", h:"Haz R2 mayor que R1 (por ejemplo R1=150 Ω, R2=330 Ω).", init:{ topo:"thevenin", r1:330, r2:220 }, ok:s=>s.topo==="thevenin" && s.vth>=3.3, msg:"¡Correcto! Vth >= 3.3 V logrado." },
+    { t:"Rth <= 150 Ω", g:"Ajusta R1 y R2 de modo que la resistencia equivalente de Thévenin Rth sea <= 150 Ω.", h:"Rth es el paralelo de R1 y R2. Usa valores bajos como 220 Ω y 330 Ω.", init:{ topo:"thevenin", r1:470, r2:470 }, ok:s=>s.topo==="thevenin" && s.rth<=150, msg:"¡Excelente! Rth reducida a <= 150 Ω." }
+  ]},
+  { n:"A7. Diodo rectificador y polarización", d:"Aprende polarización directa e inversa en un diodo de silicio (Vf ≈ 0.7 V).", level:"Análogo · 9+", r:[
+    { t:"Polarización directa", g:"Pon la polaridad en Directa (+) y cierra el interruptor con R >= 220 Ω.", h:"Elige Polaridad: Directa, cierra SW y deja R >= 220 Ω.", init:{ pol:-1, swA:0, res:100, load:"diode_std" }, ok:s=>s.pol===1 && s.swA===1 && s.res>=220 && s.ledOn, msg:"¡Bien! En directa el diodo conduce con caída ~0.7 V." },
+    { t:"Bloqueo en inversa", g:"Cambia la polaridad a Inversa (-) y comprueba que la corriente es 0.0 mA.", h:"Pon Polaridad en Inversa (-).", init:{ pol:1, swA:1, res:330, load:"diode_std" }, ok:s=>s.pol===-1 && s.curr===0, msg:"¡Correcto! En inversa el diodo bloquea el paso." },
+    { t:"Conducción segura (~13 mA)", g:"En directa, ajusta R para tener entre 10.0 mA y 16.0 mA.", h:"A 5 V con Vf=0.7 V, R ≈ 330 Ω da ~13.0 mA.", init:{ pol:1, swA:1, res:100, load:"diode_std" }, ok:s=>s.pol===1 && s.swA===1 && s.curr>=10 && s.curr<=16, msg:"¡Excelente! Corriente directa bien regulada." }
+  ]},
+  { n:"A8. Diodo Zener y regulación", d:"Usa un diodo Zener en inversa para mantener un voltaje regulado estable.", level:"Análogo · 10+", r:[
+    { t:"Activar regulación Zener", g:"Pon el Zener en inversa con R <= 220 Ω para que entre en zona Zener (~3.3 V).", h:"Selecciona Inversa (-) y R <= 220 Ω.", init:{ pol:1, swA:1, res:470, load:"zener" }, ok:s=>s.load==="zener" && s.pol===-1 && s.res<=220 && s.ledOn, msg:"¡Genial! El Zener regula la tensión en ~3.3 V." },
+    { t:"Proteger corriente del Zener", g:"Mantén el Zener regulando pero con R >= 100 Ω para no exceder corriente.", h:"Usa R entre 100 Ω y 220 Ω en polarización inversa.", init:{ pol:1, swA:1, res:47, load:"zener" }, ok:s=>s.load==="zener" && s.pol===-1 && s.res>=100 && s.res<=220, msg:"¡Muy bien! Regulación Zener segura." },
+    { t:"Apagar etapa Zener", g:"Abre el interruptor para dejar el circuito sin corriente.", h:"Pon SW en Abierto.", init:{ pol:-1, swA:1, res:150, load:"zener" }, ok:s=>s.load==="zener" && s.swA===0 && s.curr===0, msg:"¡Listo! Etapa Zener en reposo." }
+  ]},
+  { n:"A9. Diodo LED y Schottky", d:"Compara la caída de tensión de un LED (~2.0 V) frente a un diodo Schottky (~0.3 V).", level:"Análogo · 9+", r:[
+    { t:"Activar diodo Schottky", g:"Cambia a Diodo Schottky y enciéndelo con R >= 220 Ω.", h:"Elige Schottky, cierra SW y deja R >= 220 Ω.", init:{ swA:0, res:100, load:"schottky" }, ok:s=>s.load==="schottky" && s.swA===1 && s.res>=220 && s.ledOn, msg:"¡Bien! El Schottky tiene baja caída (~0.3 V) y conmutación rápida." },
+    { t:"Corriente alta en Schottky con R baja", g:"Observa que con R = 47 Ω el Schottky conduce > 80 mA; luego súbela a >= 220 Ω.", h:"Sube R a 220 Ω o más para proteger el circuito.", init:{ swA:1, res:47, load:"schottky" }, ok:s=>s.load==="schottky" && s.swA===1 && s.res>=220, msg:"¡Excelente! Evitaste una corriente elevada en el Schottky." },
+    { t:"LED encendido seguro", g:"Cambia a LED y ajústalo con R entre 220 Ω y 470 Ω.", h:"Selecciona LED, cierra SW y pon R entre 220 y 470 Ω.", init:{ swA:1, res:100, load:"led" }, ok:s=>s.load==="led" && s.swA===1 && s.res>=220 && s.res<=470, msg:"¡Perfecto! LED encendido con brillo seguro." }
+  ]},
+  { n:"A10. Fuente de corriente constante", d:"Configura una fuente de corriente que entrega miliamperios fijos pese a cambios de carga.", level:"Análogo · 10+", r:[
+    { t:"Fijar fuente en 15 mA", g:"Ajusta la corriente de referencia a 15 mA con carga de 220 Ω.", h:"Pon Corriente Set en 15 mA y Carga en 220 Ω.", init:{ topo:"isrc", iset:5, rload:220 }, ok:s=>s.topo==="isrc" && s.iset===15, msg:"¡Bien! Fuente de corriente regulada en 15.0 mA." },
+    { t:"Mantener 15 mA al variar carga", g:"Con 15 mA configurados, sube la carga a 470 Ω y verifica que I siga en 15.0 mA.", h:"Sube Carga a 470 Ω manteniendo 15 mA.", init:{ topo:"isrc", iset:15, rload:220 }, ok:s=>s.topo==="isrc" && s.iset===15 && s.rload>=470 && s.curr===15, msg:"¡Increíble! Una fuente de corriente mantiene I constante ante cambios de carga." },
+    { t:"Fuente en 25 mA", g:"Ajusta la fuente a 25 mA con carga <= 330 Ω.", h:"Pon Corriente Set en 25 mA y Carga <= 330 Ω.", init:{ topo:"isrc", iset:10, rload:470 }, ok:s=>s.topo==="isrc" && s.iset===25 && s.rload<=330, msg:"¡Excelente! 25.0 mA estables en la carga." }
+  ]},
+  { n:"A11. Capacitores y carga/descarga RC", d:"Observa cómo un capacitor almacena carga y se carga o descarga a través de R.", level:"Análogo · 9+", r:[
+    { t:"Cargar capacitor >= 4.0 V", g:"Cierra el interruptor de carga y espera/ajusta hasta que Vc llegue a >= 4.0 V.", h:"Pon SW en Cerrado y sube el tiempo/carga hasta Vc >= 4.0 V.", init:{ topo:"rc", swA:0, res:220, capUf:100, vc:0.5 }, ok:s=>s.topo==="rc" && s.vc>=4.0, msg:"¡Bien! El capacitor acumuló >= 4.0 V." },
+    { t:"Descargar capacitor <= 1.0 V", g:"Abre la carga (SW abierto) para descargar el capacitor hasta <= 1.0 V.", h:"Pon SW en Abierto y baja el nivel de carga hasta <= 1.0 V.", init:{ topo:"rc", swA:1, res:220, capUf:100, vc:4.5 }, ok:s=>s.topo==="rc" && s.vc<=1.0, msg:"¡Correcto! El capacitor liberó su energía." },
+    { t:"Constante de tiempo mayor", g:"Aumenta la capacitancia a >= 220 µF con R >= 330 Ω.", h:"Sube Capacitor a >= 220 µF y R a >= 330 Ω.", init:{ topo:"rc", swA:1, res:100, capUf:47, vc:2.0 }, ok:s=>s.topo==="rc" && s.capUf>=220 && s.res>=330, msg:"¡Excelente! Mayor R·C significa carga y descarga más lentas." }
+  ]},
+  { n:"A12. Filtro RC pasa-bajas", d:"Filtra señales variables dejando pasar frecuencias bajas y atenuando las altas.", level:"Análogo · 10+", r:[
+    { t:"Dejar pasar señal baja", g:"Con frecuencia baja (<= 100 Hz), deja la salida en >= 3.5 V.", h:"Baja la frecuencia a <= 100 Hz.", init:{ topo:"filter_lp", freq:800, res:470, capUf:100 }, ok:s=>s.topo==="filter_lp" && s.freq<=100 && s.vout>=3.5, msg:"¡Bien! Las frecuencias bajas atraviesan el filtro pasa-bajas." },
+    { t:"Atenuar frecuencia alta", g:"Sube la frecuencia a >= 1500 Hz para que la salida caiga por debajo de 1.5 V.", h:"Sube Frecuencia a >= 1500 Hz.", init:{ topo:"filter_lp", freq:80, res:470, capUf:100 }, ok:s=>s.topo==="filter_lp" && s.freq>=1500 && s.vout<1.5, msg:"¡Muy bien! El capacitor a tierra desvía las altas frecuencias." },
+    { t:"Ajustar corte con R y C", g:"Aumenta R a >= 680 Ω y C a >= 220 µF para atenuar aún más.", h:"Sube R a >= 680 Ω y C a >= 220 µF.", init:{ topo:"filter_lp", freq:500, res:220, capUf:47 }, ok:s=>s.topo==="filter_lp" && s.res>=680 && s.capUf>=220, msg:"¡Excelente! Frecuencia de corte reducida." }
+  ]},
+  { n:"A13. Transistor BJT como interruptor", d:"Usa una pequeña corriente de base (Ib) para controlar una carga mayor en colector.", level:"Análogo · 10+", r:[
+    { t:"Saturar el transistor (ON)", g:"Sube la corriente de base (Ib) para activar el transistor y encender el LED.", h:"Pon Ib >= 50 µA.", init:{ topo:"bjt_sw", ib:0, res:330 }, ok:s=>s.topo==="bjt_sw" && s.ib>=50 && s.ledOn, msg:"¡Bien! Una pequeña corriente en Base activa la corriente de Colector." },
+    { t:"Corte del transistor (OFF)", g:"Baja Ib a 0 µA para apagar el transistor.", h:"Pon Ib en 0 µA.", init:{ topo:"bjt_sw", ib:120, res:330 }, ok:s=>s.topo==="bjt_sw" && s.ib===0 && !s.ledOn, msg:"¡Correcto! Sin corriente de base el BJT entra en corte." },
+    { t:"Activar con protección de colector", g:"Enciende el BJT con Ib >= 60 µA y resistencia de colector >= 220 Ω.", h:"Ib >= 60 µA y R >= 220 Ω.", init:{ topo:"bjt_sw", ib:0, res:100 }, ok:s=>s.topo==="bjt_sw" && s.ib>=60 && s.res>=220 && s.ledOn, msg:"¡Excelente! Conmutación con transistor protegida." }
+  ]},
+  { n:"A14. Amplificador con transistor (Emisor común)", d:"Observa cómo un transistor amplifica una señal pequeña de entrada.", level:"Análogo · 11+", r:[
+    { t:"Ganancia >= 5x", g:"Ajusta la ganancia de etapa a 5x o más con señal de entrada activa.", h:"Sube Ganancia a >= 5x y Vin >= 0.2 V.", init:{ topo:"amp", vin:0.2, gain:2 }, ok:s=>s.topo==="amp" && s.gain>=5 && s.vout>=1.0, msg:"¡Bien! La señal de salida amplificada supera 1.0 V." },
+    { t:"Evitar saturación de salida", g:"Mantén Vout <= 4.5 V reduciendo Vin o la ganancia.", h:"Baja Vin o Ganancia para que Vout no supere 4.5 V.", init:{ topo:"amp", vin:0.8, gain:8 }, ok:s=>s.topo==="amp" && s.vout>0 && s.vout<=4.5, msg:"¡Correcto! Amplificación lineal sin recortar en el tope." },
+    { t:"Señal de salida >= 3.0 V", g:"Logra una tensión de salida entre 3.0 V y 4.5 V.", h:"Combina Vin y Ganancia para obtener 3.0 V – 4.5 V.", init:{ topo:"amp", vin:0.2, gain:3 }, ok:s=>s.topo==="amp" && s.vout>=3.0 && s.vout<=4.5, msg:"¡Excelente! Etapa amplificadora bien calibrada." }
+  ]},
+  { n:"A15. MOSFET de potencia y carga", d:"Controla una carga de mayor corriente mediante tensión de compuerta (Vgs).", level:"Análogo · 11+", r:[
+    { t:"Encender MOSFET (Vgs >= 4 V)", g:"Sube Vgs a 4.0 V o más para conducir la carga.", h:"Mueve Vgs a >= 4.0 V.", init:{ topo:"mosfet", vgs:1.0, res:220 }, ok:s=>s.topo==="mosfet" && s.vgs>=4.0 && s.ledOn, msg:"¡Bien! Superado el umbral Vgs, el canal MOSFET conduce." },
+    { t:"Apagar MOSFET (Vgs < 2 V)", g:"Baja Vgs por debajo de 2.0 V para cortar el paso.", h:"Pon Vgs <= 1.5 V.", init:{ topo:"mosfet", vgs:5.0, res:220 }, ok:s=>s.topo==="mosfet" && s.vgs<2.0 && !s.ledOn, msg:"¡Correcto! Canal MOSFET cerrado." },
+    { t:"Conducción segura con R >= 220 Ω", g:"Activa el MOSFET con Vgs >= 4.5 V y resistencia >= 220 Ω.", h:"Vgs >= 4.5 V y R >= 220 Ω.", init:{ topo:"mosfet", vgs:0, res:100 }, ok:s=>s.topo==="mosfet" && s.vgs>=4.5 && s.res>=220, msg:"¡Excelente! Control eficiente con MOSFET." }
+  ]},
+  { n:"A16. Sensores analógicos (Luz, Temp y Distancia)", d:"Lee sensores analógicos y activa una salida cuando superan un umbral.", level:"Análogo · 9+", r:[
+    { t:"Alerta por temperatura alta", g:"Selecciona Sensor Temp y súbela a >= 35 °C para activar la salida.", h:"Elige Temp y sube el valor a >= 35 °C.", init:{ topo:"sensor", stype:"temp", sval:20 }, ok:s=>s.topo==="sensor" && s.stype==="temp" && s.sval>=35 && s.ledOn, msg:"¡Alerta térmica activa! Sensor por encima de 35 °C." },
+    { t:"Sensor de luz en penumbra", g:"Selecciona Sensor Luz y bájala a <= 25% para encender la salida.", h:"Elige Luz y ponla en <= 25%.", init:{ topo:"sensor", stype:"light", sval:80 }, ok:s=>s.topo==="sensor" && s.stype==="light" && s.sval<=25 && s.ledOn, msg:"¡Bien! Detección de poca luz activada." },
+    { t:"Sensor de proximidad cercano", g:"Selecciona Distancia y ajústala a <= 20 cm para activar aviso.", h:"Elige Distancia y ponla en <= 20 cm.", init:{ topo:"sensor", stype:"dist", sval:75 }, ok:s=>s.topo==="sensor" && s.stype==="dist" && s.sval<=20 && s.ledOn, msg:"¡Excelente! Objeto cercano detectado." }
+  ]},
+  { n:"A17. Temporizador NE555 (Modo Astable)", d:"Configura la frecuencia de pulso de un oscilador NE555 astable.", level:"Análogo · 10+", r:[
+    { t:"Frecuencia lenta (<= 2 Hz)", g:"Ajusta los parámetros del NE555 para obtener frecuencia <= 2.0 Hz.", h:"Sube R1/R2 o C para bajar la frecuencia a <= 2.0 Hz.", init:{ topo:"ne555", freq:8.0, duty:50 }, ok:s=>s.topo==="ne555" && s.freq<=2.0, msg:"¡Bien! Pulso lento ideal para ver parpadeo." },
+    { t:"Frecuencia rápida (>= 5 Hz)", g:"Ajusta el NE555 para lograr frecuencia >= 5.0 Hz.", h:"Baja resistencia o capacitancia para subir la frecuencia a >= 5.0 Hz.", init:{ topo:"ne555", freq:1.0, duty:50 }, ok:s=>s.topo==="ne555" && s.freq>=5.0, msg:"¡Genial! Oscilación rápida activa." },
+    { t:"Ciclo de trabajo ~50%", g:"Configura el ciclo útil entre 45% y 55% con frecuencia entre 2 y 6 Hz.", h:"Ajusta Duty cerca de 50% y Frecuencia entre 2 y 6 Hz.", init:{ topo:"ne555", freq:2.0, duty:80 }, ok:s=>s.topo==="ne555" && s.duty>=45 && s.duty<=55 && s.freq>=2 && s.freq<=6, msg:"¡Excelente! Onda cuadrada equilibrada." }
+  ]},
+  { n:"A18. Comparador analógico con Op-Amp", d:"Compara Vin contra Vref para decidir si la salida del comparador está en alto.", level:"Análogo · 10+", r:[
+    { t:"Vin supera Vref", g:"Haz que Vin sea mayor que Vref para que el comparador active la salida.", h:"Sube Vin por encima de Vref.", init:{ topo:"comp", vin:1.5, vref:2.5 }, ok:s=>s.topo==="comp" && s.vin>s.vref && s.ledOn, msg:"¡Bien! Vin > Vref activa la salida del comparador." },
+    { t:"Vin por debajo de Vref", g:"Haz que Vin sea menor que Vref para apagar la salida.", h:"Baja Vin por debajo de Vref.", init:{ topo:"comp", vin:4.0, vref:2.5 }, ok:s=>s.topo==="comp" && s.vin<s.vref && !s.ledOn, msg:"¡Correcto! Cuando Vin < Vref la salida permanece baja." },
+    { t:"Referencia en 3.0 V y Vin en 3.5 V", g:"Fija Vref en 3.0 V y Vin en >= 3.5 V.", h:"Pon Vref ≈ 3.0 V y Vin >= 3.5 V.", init:{ topo:"comp", vin:1.0, vref:2.0 }, ok:s=>s.topo==="comp" && Math.abs(s.vref-3.0)<=0.2 && s.vin>=3.5 && s.ledOn, msg:"¡Excelente! Comparador calibrado y activo." }
+  ]},
+  { n:"A19. Regulador lineal y disipación térmica", d:"Observa cómo la caída de tensión y la corriente afectan la potencia disipada.", level:"Análogo · 11+", r:[
+    { t:"Potencia segura (<= 150 mW)", g:"Ajusta la resistencia para que la potencia en R sea <= 150 mW con el circuito activo.", h:"Sube R a >= 220 Ω para reducir corriente y potencia.", init:{ swA:1, res:33, load:"led" }, ok:s=>s.swA===1 && s.ledOn && s.powerMw<=150, msg:"¡Bien! Menor corriente reduce drásticamente el calentamiento." },
+    { t:"Detectar sobrecalentamiento", g:"Con R = 22 Ω el circuito disipa mucha potencia; súbela a >= 220 Ω.", h:"Sube R a 220 Ω o más.", init:{ swA:1, res:22, load:"led" }, ok:s=>s.swA===1 && s.res>=220 && s.powerMw<=150, msg:"¡Muy bien! Evitaste exceso térmico en la resistencia." },
+    { t:"Modo de baja potencia (< 60 mW)", g:"Sube R para que la potencia disipada sea menor a 60 mW manteniendo el LED encendido.", h:"Usa R >= 470 Ω con el interruptor cerrado.", init:{ swA:1, res:150, load:"led" }, ok:s=>s.swA===1 && s.ledOn && s.powerMw<60, msg:"¡Excelente! Operación fría y eficiente." }
+  ]},
+  { n:"A20. Laboratorio integral análogo", d:"Integra protección, carga y control analógico en un reto final.", level:"Análogo · Maestro", r:[
+    { t:"Lazo seguro con LED", g:"Enciende el LED con R entre 220 Ω y 470 Ω.", h:"Cierra SW y deja R entre 220 y 470 Ω.", init:{ swA:0, res:20, load:"led" }, ok:s=>s.load==="led" && s.swA===1 && s.res>=220 && s.res<=470, msg:"¡Reto 1 superado!" },
+    { t:"Motor DC en marcha segura", g:"Activa el Motor DC con R >= 150 Ω y sin exceso de corriente.", h:"Cambia a Motor DC, cierra SW y deja R >= 150 Ω.", init:{ swA:0, res:20, load:"motor" }, ok:s=>s.load==="motor" && s.swA===1 && s.res>=150, msg:"¡Reto 2 superado!" },
+    { t:"Desconexión segura", g:"Abre el interruptor para dejar el sistema en 0.0 mA.", h:"Pon SW en Abierto.", init:{ swA:1, res:330, load:"led" }, ok:s=>s.swA===0 && s.curr===0, msg:"¡Reto 3 superado! Dominas los 20 mundos de electrónica análoga." }
+  ]}
+];
+
+/* =====================================================================
+   20 MUNDOS DE SISTEMAS DIGITALES (cada uno con 3 retos = 60 retos)
+   ===================================================================== */
+const DIGITAL_WORLDS = [
+  { n:"D1. Niveles lógicos 0 (LOW) y 1 (HIGH)", d:"Comprende cómo operan las señales binarias 0 y 1 en las entradas A y B.", level:"Digital · 8+", r:[
+    { t:"Activar A = 1 y B = 0", g:"Pon la entrada A en 1 y la entrada B en 0.", h:"Pulsa A = 1 y B = 0.", init:{ a:0, b:1, gate:"BUF" }, ok:s=>s.a===1 && s.b===0, msg:"¡Bien! A = 1 (HIGH) y B = 0 (LOW)." },
+    { t:"Activar A = 1 y B = 1", g:"Pon ambas entradas A y B en 1.", h:"Activa A = 1 y B = 1.", init:{ a:0, b:0, gate:"AND" }, ok:s=>s.a===1 && s.b===1, msg:"¡Correcto! Ambas señales en nivel alto (1)." },
+    { t:"Todo en 0 (LOW)", g:"Deja A = 0 y B = 0.", h:"Pon ambos en 0.", init:{ a:1, b:1, gate:"AND" }, ok:s=>s.a===0 && s.b===0, msg:"¡Listo! Estado base en 0." }
+  ]},
+  { n:"D2. Código binario y peso de bits", d:"Aprende a leer y formar números binarios de 4 bits (8, 4, 2, 1).", level:"Digital · 8+", r:[
+    { t:"Formar el número 5 (0101)", g:"Ajusta los 4 bits para representar el decimal 5.", h:"5 en binario de 4 bits es 0101 (4 + 1 = 5).", init:{ topo:"binary4", b3:0, b2:0, b1:0, b0:0 }, ok:s=>s.topo==="binary4" && s.binVal===5, msg:"¡Excelente! 0101₂ = 4 + 1 = 5₁₀." },
+    { t:"Formar el número 10 (1010)", g:"Ajusta los bits para representar el decimal 10.", h:"10 en binario es 1010 (8 + 2 = 10).", init:{ topo:"binary4", b3:0, b2:1, b1:0, b0:1 }, ok:s=>s.topo==="binary4" && s.binVal===10, msg:"¡Muy bien! 1010₂ = 8 + 2 = 10₁₀." },
+    { t:"Máximo en 4 bits: 15 (1111)", g:"Pon los 4 bits en 1 para formar 15.", h:"Activa b3, b2, b1 y b0 en 1.", init:{ topo:"binary4", b3:1, b2:0, b1:1, b0:0 }, ok:s=>s.topo==="binary4" && s.binVal===15, msg:"¡Genial! 1111₂ = 15₁₀." }
+  ]},
+  { n:"D3. Compuerta NOT (Inversora)", d:"La compuerta NOT invierte el valor lógico de A hacia la salida Y.", level:"Digital · 8+", r:[
+    { t:"NOT(0) = 1", g:"Con NOT, logra que Y valga 1.", h:"Pon A = 0.", init:{ a:1, b:0, gate:"NOT" }, ok:s=>s.gate==="NOT" && s.a===0 && s.y===1, msg:"¡Bien! NOT(0) = 1." },
+    { t:"NOT(1) = 0", g:"Con NOT, logra que Y valga 0.", h:"Pon A = 1.", init:{ a:0, b:0, gate:"NOT" }, ok:s=>s.gate==="NOT" && s.a===1 && s.y===0, msg:"¡Correcto! NOT(1) = 0." },
+    { t:"Inversión doble", g:"Pasa de A=1 a A=0 y comprueba Y=1.", h:"Deja A = 0.", init:{ a:1, b:0, gate:"NOT" }, ok:s=>s.gate==="NOT" && s.a===0 && s.y===1, msg:"¡Excelente!" }
+  ]},
+  { n:"D4. Compuerta AND", d:"Salida Y = 1 solo cuando A = 1 y B = 1.", level:"Digital · 8+", r:[
+    { t:"AND en 1", g:"Haz que Y = 1 usando AND.", h:"Pon A = 1 y B = 1.", init:{ a:1, b:0, gate:"AND" }, ok:s=>s.gate==="AND" && s.y===1, msg:"¡Genial! 1 AND 1 = 1." },
+    { t:"AND en 0 con A=1, B=0", g:"Logra Y = 0 con A = 1 y B = 0.", h:"Pon B = 0.", init:{ a:1, b:1, gate:"AND" }, ok:s=>s.gate==="AND" && s.a===1 && s.b===0 && s.y===0, msg:"¡Bien! Si falta B, Y es 0." },
+    { t:"AND en 0 con A=0, B=1", g:"Logra Y = 0 con A = 0 y B = 1.", h:"Pon A = 0 y B = 1.", init:{ a:1, b:1, gate:"AND" }, ok:s=>s.gate==="AND" && s.a===0 && s.b===1 && s.y===0, msg:"¡Correcto! 0 AND 1 = 0." }
+  ]},
+  { n:"D5. Compuerta OR", d:"Salida Y = 1 si al menos una entrada A o B es 1.", level:"Digital · 8+", r:[
+    { t:"OR en 1 por B", g:"Haz que Y = 1 con A = 0 y B = 1.", h:"A = 0 y B = 1.", init:{ a:0, b:0, gate:"OR" }, ok:s=>s.gate==="OR" && s.a===0 && s.b===1 && s.y===1, msg:"¡Bien! 0 OR 1 = 1." },
+    { t:"OR en 1 por A", g:"Haz que Y = 1 con A = 1 y B = 0.", h:"A = 1 y B = 0.", init:{ a:0, b:0, gate:"OR" }, ok:s=>s.gate==="OR" && s.a===1 && s.b===0 && s.y===1, msg:"¡Muy bien! 1 OR 0 = 1." },
+    { t:"OR en 0", g:"Logra Y = 0 en OR.", h:"Pon A = 0 y B = 0.", init:{ a:0, b:1, gate:"OR" }, ok:s=>s.gate==="OR" && s.a===0 && s.b===0 && s.y===0, msg:"¡Excelente! Solo 0 OR 0 da 0." }
+  ]},
+  { n:"D6. Compuerta NAND", d:"Salida Y = 0 solo cuando A = 1 y B = 1; en los demás casos Y = 1.", level:"Digital · 8+", r:[
+    { t:"NAND en 0", g:"Haz que Y = 0 en NAND.", h:"Pon A = 1 y B = 1.", init:{ a:0, b:0, gate:"NAND" }, ok:s=>s.gate==="NAND" && s.y===0, msg:"¡Bien! NAND(1,1) = 0." },
+    { t:"NAND en 1", g:"Haz que Y = 1 en NAND.", h:"Evita tener A=1 y B=1 juntos.", init:{ a:1, b:1, gate:"NAND" }, ok:s=>s.gate==="NAND" && s.y===1, msg:"¡Correcto! NAND entrega 1." },
+    { t:"NAND con A=0, B=1", g:"Deja A = 0 y B = 1 y comprueba Y = 1.", h:"A = 0 y B = 1.", init:{ a:1, b:1, gate:"NAND" }, ok:s=>s.gate==="NAND" && s.a===0 && s.b===1 && s.y===1, msg:"¡Excelente!" }
+  ]},
+  { n:"D7. Compuerta NOR", d:"Salida Y = 1 solo cuando A = 0 y B = 0.", level:"Digital · 8+", r:[
+    { t:"NOR en 1", g:"Haz que Y = 1 en NOR.", h:"Pon A = 0 y B = 0.", init:{ a:1, b:0, gate:"NOR" }, ok:s=>s.gate==="NOR" && s.y===1, msg:"¡Genial! NOR(0,0) = 1." },
+    { t:"NOR en 0 con A=1", g:"Haz que Y = 0 activando A = 1.", h:"Pon A = 1.", init:{ a:0, b:0, gate:"NOR" }, ok:s=>s.gate==="NOR" && s.a===1 && s.y===0, msg:"¡Bien! NOR(1,0) = 0." },
+    { t:"NOR en 0 con B=1", g:"Haz que Y = 0 activando B = 1.", h:"Pon B = 1.", init:{ a:0, b:0, gate:"NOR" }, ok:s=>s.gate==="NOR" && s.b===1 && s.y===0, msg:"¡Correcto! NOR(0,1) = 0." }
+  ]},
+  { n:"D8. Compuerta XOR", d:"Salida Y = 1 cuando A y B tienen valores distintos.", level:"Digital · 8+", r:[
+    { t:"XOR en 1 (0 y 1)", g:"Haz que Y = 1 con A = 0 y B = 1.", h:"A = 0 y B = 1.", init:{ a:0, b:0, gate:"XOR" }, ok:s=>s.gate==="XOR" && s.a===0 && s.b===1 && s.y===1, msg:"¡Bien! 0 XOR 1 = 1." },
+    { t:"XOR en 1 (1 y 0)", g:"Haz que Y = 1 con A = 1 y B = 0.", h:"A = 1 y B = 0.", init:{ a:0, b:0, gate:"XOR" }, ok:s=>s.gate==="XOR" && s.a===1 && s.b===0 && s.y===1, msg:"¡Muy bien! 1 XOR 0 = 1." },
+    { t:"XOR en 0 (iguales)", g:"Haz que Y = 0 poniendo A y B iguales.", h:"Pon ambos en 0 o ambos en 1.", init:{ a:1, b:0, gate:"XOR" }, ok:s=>s.gate==="XOR" && s.a===s.b && s.y===0, msg:"¡Excelente! Entradas iguales en XOR producen 0." }
+  ]},
+  { n:"D9. Compuerta XNOR (Equivalencia)", d:"Salida Y = 1 cuando A y B son iguales.", level:"Digital · 9+", r:[
+    { t:"XNOR en 1 con (1,1)", g:"Haz que Y = 1 en XNOR poniendo A = 1 y B = 1.", h:"A = 1 y B = 1.", init:{ a:1, b:0, gate:"XNOR" }, ok:s=>s.gate==="XNOR" && s.a===1 && s.b===1 && s.y===1, msg:"¡Bien! Entradas iguales (1,1) dan Y = 1 en XNOR." },
+    { t:"XNOR en 1 con (0,0)", g:"Haz que Y = 1 en XNOR poniendo A = 0 y B = 0.", h:"A = 0 y B = 0.", init:{ a:1, b:0, gate:"XNOR" }, ok:s=>s.gate==="XNOR" && s.a===0 && s.b===0 && s.y===1, msg:"¡Correcto! (0,0) también da Y = 1." },
+    { t:"XNOR en 0 con diferentes", g:"Haz que Y = 0 dejando A distinto de B.", h:"Pon A = 1 y B = 0.", init:{ a:1, b:1, gate:"XNOR" }, ok:s=>s.gate==="XNOR" && s.a!==s.b && s.y===0, msg:"¡Excelente! Entradas distintas dan Y = 0." }
+  ]},
+  { n:"D10. SR Latch (Memoria básica)", d:"Almacena un bit en Q usando las entradas S (Set) y R (Reset).", level:"Digital · 10+", r:[
+    { t:"Activar memoria (Set Q = 1)", g:"Pulsa Set (A = 1, B = 0) para fijar la salida Q en 1.", h:"Pon A (Set) = 1 y B (Reset) = 0.", init:{ topo:"latch", a:0, b:0, q:0 }, ok:s=>s.topo==="latch" && s.q===1, msg:"¡Bien! El latch guardó Q = 1." },
+    { t:"Reiniciar memoria (Reset Q = 0)", g:"Pulsa Reset (B = 1) para llevar Q a 0.", h:"Pon B (Reset) = 1.", init:{ topo:"latch", a:0, b:0, q:1 }, ok:s=>s.topo==="latch" && s.q===0, msg:"¡Correcto! Latch reiniciado a Q = 0." },
+    { t:"Mantener Q = 1 en reposo", g:"Deja Q = 1 y pon A = 0 y B = 0 para comprobar retención.", h:"Primero pon Q = 1 y luego deja A = 0 y B = 0 con Q = 1.", init:{ topo:"latch", a:1, b:0, q:1 }, ok:s=>s.topo==="latch" && s.a===0 && s.b===0 && s.q===1, msg:"¡Excelente! El latch retiene su estado cuando S=0 y R=0." }
+  ]},
+  { n:"D11. D Latch (Cerrojo de datos)", d:"Captura el dato D cuando Enable (E) está activo.", level:"Digital · 10+", r:[
+    { t:"Capturar D = 1 con Enable = 1", g:"Activa Enable (B = 1) y pon D (A = 1) para que Q = 1.", h:"A = 1 y B = 1.", init:{ topo:"dlatch", a:0, b:0, q:0 }, ok:s=>s.topo==="dlatch" && s.q===1, msg:"¡Bien! D Latch capturó el 1." },
+    { t:"Bloquear cambio con Enable = 0", g:"Con Enable = 0 (B = 0), cambia A a 0 y verifica que Q siga en 1.", h:"Pon B = 0 y A = 0 manteniendo Q = 1.", init:{ topo:"dlatch", a:1, b:1, q:1 }, ok:s=>s.topo==="dlatch" && s.b===0 && s.q===1, msg:"¡Correcto! Con Enable = 0 el cerrojo bloquea cambios." },
+    { t:"Capturar D = 0 con Enable = 1", g:"Con Enable = 1 (B = 1), pon D (A = 0) para que Q = 0.", h:"A = 0 y B = 1.", init:{ topo:"dlatch", a:1, b:1, q:1 }, ok:s=>s.topo==="dlatch" && s.a===0 && s.b===1 && s.q===0, msg:"¡Excelente! Dato 0 capturado." }
+  ]},
+  { n:"D12. Flip-Flop D sincronizado", d:"Actualiza la salida Q en un pulso de reloj (CLK) según el dato D.", level:"Digital · 10+", r:[
+    { t:"Cargar D = 1 en pulso CLK", g:"Pon D (A = 1) y pulsa CLK (B = 1) para que Q = 1.", h:"Pon A = 1 y activa B (CLK) = 1.", init:{ topo:"dff", a:0, b:0, q:0 }, ok:s=>s.topo==="dff" && s.q===1, msg:"¡Bien! Flip-Flop D cargó Q = 1." },
+    { t:"Cargar D = 0 en pulso CLK", g:"Pon D (A = 0) y pulsa CLK (B = 1) para que Q = 0.", h:"Pon A = 0 y activa B (CLK) = 1.", init:{ topo:"dff", a:1, b:0, q:1 }, ok:s=>s.topo==="dff" && s.q===0, msg:"¡Correcto! Flip-Flop D actualizado a 0." },
+    { t:"Mantener Q = 1 sin pulso CLK", g:"Con Q = 1, cambia D a 0 manteniendo CLK = 0 para verificar memoria.", h:"Deja B (CLK) = 0 y A = 0 con Q = 1.", init:{ topo:"dff", a:1, b:0, q:1 }, ok:s=>s.topo==="dff" && s.b===0 && s.q===1, msg:"¡Excelente! Sin flanco de reloj el estado se conserva." }
+  ]},
+  { n:"D13. Contador binario ascendente (0–15)", d:"Avanza los pulsos de conteo para llevar el contador al valor objetivo.", level:"Digital · 9+", r:[
+    { t:"Contar hasta 3", g:"Avanza el contador hasta el valor 3.", h:"Pulsa «+1 Pulso» hasta que Cuenta = 3.", init:{ topo:"counter", cnt:0, dir:1 }, ok:s=>s.topo==="counter" && s.cnt===3, msg:"¡Bien! Contador en 3 (0011₂)." },
+    { t:"Contar hasta 7", g:"Avanza el contador hasta el valor 7.", h:"Lleva el contador a 7 (0111₂).", init:{ topo:"counter", cnt:4, dir:1 }, ok:s=>s.topo==="counter" && s.cnt===7, msg:"¡Muy bien! Contador en 7." },
+    { t:"Contar hasta 12", g:"Lleva el contador hasta 12 (1100₂).", h:"Avanza hasta 12.", init:{ topo:"counter", cnt:9, dir:1 }, ok:s=>s.topo==="counter" && s.cnt===12, msg:"¡Excelente! 12 en binario es 1100₂." }
+  ]},
+  { n:"D14. Contador descendente y reinicio", d:"Usa conteo regresivo o reinicio para llegar al número solicitado.", level:"Digital · 9+", r:[
+    { t:"Bajar de 6 a 2", g:"Configura cuenta descendente o pulsos para llegar a 2.", h:"Lleva el contador a 2.", init:{ topo:"counter", cnt:6, dir:-1 }, ok:s=>s.topo==="counter" && s.cnt===2, msg:"¡Bien! Cuenta regresiva hasta 2." },
+    { t:"Reiniciar a 0", g:"Deja el contador en 0.", h:"Usa Reiniciar o baja hasta 0.", init:{ topo:"counter", cnt:8, dir:-1 }, ok:s=>s.topo==="counter" && s.cnt===0, msg:"¡Correcto! Contador en 0." },
+    { t:"Llegar a 5 desde 8", g:"Ajusta la cuenta hasta 5.", h:"Lleva el contador a 5.", init:{ topo:"counter", cnt:8, dir:-1 }, ok:s=>s.topo==="counter" && s.cnt===5, msg:"¡Excelente! Valor 5 alcanzado." }
+  ]},
+  { n:"D15. Display de 7 segmentos (0–9)", d:"Visualiza dígitos en un display de 7 segmentos y comprende qué segmentos se encienden.", level:"Digital · 9+", r:[
+    { t:"Mostrar el dígito 3", g:"Ajusta el display de 7 segmentos para mostrar el número 3.", h:"Selecciona el dígito 3.", init:{ topo:"seg7", digit:0 }, ok:s=>s.topo==="seg7" && s.digit===3, msg:"¡Bien! El 3 enciende los segmentos a, b, c, d y g." },
+    { t:"Mostrar el dígito 8", g:"Muestra el número 8 (todos los 7 segmentos activos).", h:"Selecciona el dígito 8.", init:{ topo:"seg7", digit:1 }, ok:s=>s.topo==="seg7" && s.digit===8, msg:"¡Genial! El 8 ilumina los 7 segmentos (a–g)." },
+    { t:"Mostrar el dígito 7", g:"Muestra el número 7 en el display.", h:"Selecciona el dígito 7.", init:{ topo:"seg7", digit:4 }, ok:s=>s.topo==="seg7" && s.digit===7, msg:"¡Excelente! Dígito 7 mostrado." }
+  ]},
+  { n:"D16. Sumador binario de 1 bit (Half Adder)", d:"Calcula Suma (S) y Acarreo (C) para dos bits de entrada A y B.", level:"Digital · 9+", r:[
+    { t:"1 + 0 -> Suma=1, Acarreo=0", g:"Pon A = 1 y B = 0 en el sumador.", h:"A = 1 y B = 0.", init:{ topo:"adder", a:0, b:0 }, ok:s=>s.topo==="adder" && s.a===1 && s.b===0 && s.sum===1 && s.carry===0, msg:"¡Bien! 1 + 0 = 1 (acarreo 0)." },
+    { t:"1 + 1 -> Suma=0, Acarreo=1", g:"Pon A = 1 y B = 1 para generar acarreo (Carry = 1).", h:"A = 1 y B = 1.", init:{ topo:"adder", a:0, b:1 }, ok:s=>s.topo==="adder" && s.a===1 && s.b===1 && s.sum===0 && s.carry===1, msg:"¡Excelente! En binario 1 + 1 = 10₂ (Suma 0, Acarreo 1)." },
+    { t:"0 + 0 -> Suma=0, Acarreo=0", g:"Pon A = 0 y B = 0.", h:"A = 0 y B = 0.", init:{ topo:"adder", a:1, b:1 }, ok:s=>s.topo==="adder" && s.a===0 && s.b===0 && s.sum===0 && s.carry===0, msg:"¡Correcto! 0 + 0 = 0." }
+  ]},
+  { n:"D17. Multiplexor 2 a 1 (MUX)", d:"Usa la entrada de selección (S) para elegir cuál señal (A o B) pasa a la salida Y.", level:"Digital · 10+", r:[
+    { t:"Seleccionar entrada A (S = 0)", g:"Pon Sel (B) = 0 y A = 1 para que Y tome el valor de A (1).", h:"A = 1 y B (Sel) = 0.", init:{ topo:"mux", a:0, b:1 }, ok:s=>s.topo==="mux" && s.b===0 && s.a===1 && s.y===1, msg:"¡Bien! Con Sel = 0, el MUX envía A hacia Y." },
+    { t:"Seleccionar entrada B (S = 1)", g:"Haz que el MUX elija la señal de la otra entrada y entregue Y = 1.", h:"Activa Sel (B) = 1 y asegúrate de que la señal seleccionada sea 1.", init:{ topo:"mux", a:1, b:0 }, ok:s=>s.topo==="mux" && s.b===1 && s.y===1, msg:"¡Genial! Con Sel = 1, el MUX dirige la segunda línea a Y." },
+    { t:"Salida en 0 con Sel = 0", g:"Con Sel = 0, haz que la salida Y sea 0.", h:"Pon Sel (B) = 0 y A = 0.", init:{ topo:"mux", a:1, b:1 }, ok:s=>s.topo==="mux" && s.b===0 && s.a===0 && s.y===0, msg:"¡Excelente! Y sigue a A cuando Sel = 0." }
+  ]},
+  { n:"D18. Decodificador / Selector de línea", d:"Activa la línea de salida correspondiente a la combinación de A y B.", level:"Digital · 10+", r:[
+    { t:"Activar línea D3 (A=1, B=1)", g:"Selecciona la combinación A = 1 y B = 1 para activar D3.", h:"A = 1 y B = 1.", init:{ topo:"decoder", a:0, b:0 }, ok:s=>s.topo==="decoder" && s.a===1 && s.b===1, msg:"¡Bien! Combinación (1,1) -> línea D3 activa." },
+    { t:"Activar línea D1 (A=0, B=1)", g:"Pon A = 0 y B = 1 para activar la línea D1.", h:"A = 0 y B = 1.", init:{ topo:"decoder", a:1, b:1 }, ok:s=>s.topo==="decoder" && s.a===0 && s.b===1, msg:"¡Correcto! (0,1) selecciona D1." },
+    { t:"Activar línea D2 (A=1, B=0)", g:"Pon A = 1 y B = 0 para activar la línea D2.", h:"A = 1 y B = 0.", init:{ topo:"decoder", a:0, b:1 }, ok:s=>s.topo==="decoder" && s.a===1 && s.b===0, msg:"¡Excelente! (1,0) selecciona D2." }
+  ]},
+  { n:"D19. Detector de paridad / alarma digital", d:"Detecta condiciones lógicas combinadas con A y B.", level:"Digital · 10+", r:[
+    { t:"Alarma por doble señal (AND)", g:"Con compuerta AND, activa Y = 1 con A = 1 y B = 1.", h:"AND con A = 1 y B = 1.", init:{ a:0, b:1, gate:"AND" }, ok:s=>s.gate==="AND" && s.y===1, msg:"¡Alarma activada!" },
+    { t:"Diferencia entre A y B (XOR)", g:"Con XOR, haz que Y = 1 cuando A y B sean distintos.", h:"XOR con A distinto de B.", init:{ a:1, b:1, gate:"XOR" }, ok:s=>s.gate==="XOR" && s.y===1, msg:"¡Diferencia detectada!" },
+    { t:"Bloqueo total (NOR)", g:"Con NOR, logra Y = 1 cuando ni A ni B estén activos.", h:"NOR con A = 0 y B = 0.", init:{ a:1, b:0, gate:"NOR" }, ok:s=>s.gate==="NOR" && s.y===1, msg:"¡Estado seguro verificado!" }
+  ]},
+  { n:"D20. Laboratorio integral digital", d:"Demuestra tu dominio de compuertas, código binario y memoria digital.", level:"Digital · Maestro", r:[
+    { t:"Número binario 6 (0110)", g:"Forma el número 6 en el registro de 4 bits.", h:"6 en binario es 0110 (4 + 2 = 6).", init:{ topo:"binary4", b3:0, b2:0, b1:0, b0:0 }, ok:s=>s.topo==="binary4" && s.binVal===6, msg:"¡Reto 1 superado! 0110₂ = 6." },
+    { t:"Dígito 9 en 7 segmentos", g:"Muestra el número 9 en el display de 7 segmentos.", h:"Selecciona el dígito 9.", init:{ topo:"seg7", digit:2 }, ok:s=>s.topo==="seg7" && s.digit===9, msg:"¡Reto 2 superado! Dígito 9 en pantalla." },
+    { t:"Salida 1 con compuerta XOR", g:"Usa XOR con A y B distintos para obtener Y = 1.", h:"Elige XOR y pon A distinto de B.", init:{ topo:"gates", a:1, b:1, gate:"XOR" }, ok:s=>s.gate==="XOR" && s.y===1, msg:"¡Reto 3 superado! Dominas los 20 mundos de sistemas digitales." }
+  ]}
+];
+
+/* ================= ESTADO Y PERSISTENCIA ================= */
+let track = "analog", wi = 0, ri = 0, done = new Set();
+let flowAnim = true, phase = 0;
+
+let st = {
+  swA:0, res:330, topo:"single", load:"led", pol:1,
+  ra:300, rb:300, rc:300, ry1:100, ry2:100, ry3:100,
+  r1:330, r2:330, vth:2.5, rth:165,
+  iset:15, rload:220, capUf:100, vc:0, freq:100, vout:0,
+  ib:0, vin:0.2, gain:4, vgs:0, stype:"temp", sval:25, duty:50, vref:2.5,
+  powerMw:0, curr:0, ledOn:false, y:0,
+  a:0, b:0, gate:"AND", b3:0, b2:0, b1:0, b0:0, binVal:0,
+  q:0, cnt:0, dir:1, digit:0, sum:0, carry:0
+};
+
+try {
+  done = new Set(JSON.parse(localStorage.getItem("ea3_done") || "[]"));
+  track = localStorage.getItem("ea3_track") === "digital" ? "digital" : "analog";
+  wi = +localStorage.getItem("ea3_w") || 0;
+  ri = +localStorage.getItem("ea3_r") || 0;
+} catch (e) {}
+
+const listForTrack = t => t === "digital" ? DIGITAL_WORLDS : ANALOG_WORLDS;
+if (!listForTrack(track)[wi] || !listForTrack(track)[wi].r[ri]) { wi = 0; ri = 0; }
+
+const key = (t, w, r) => t + "." + w + "." + r;
+const save = () => {
+  try {
+    localStorage.setItem("ea3_done", JSON.stringify([...done]));
+    localStorage.setItem("ea3_track", track);
+    localStorage.setItem("ea3_w", wi);
+    localStorage.setItem("ea3_r", ri);
+  } catch (e) {}
+};
+
+function computeState() {
+  if (track === "analog") {
+    const rSafe = Math.max(10, st.res);
+    if (st.topo === "delta_y") {
+      const sumD = Math.max(1, st.ra + st.rb + st.rc);
+      st.ry1 = Math.round((st.rb * st.rc) / sumD);
+      st.ry2 = Math.round((st.ra * st.rc) / sumD);
+      st.ry3 = Math.round((st.ra * st.rb) / sumD);
+      st.curr = 12.0;
+      st.ledOn = true;
+      st.vout = +(5.0 * (st.ry1 / (st.ry1 + 100))).toFixed(2);
+      st.powerMw = 45;
+    } else if (st.topo === "thevenin") {
+      const r1s = Math.max(20, st.r1), r2s = Math.max(20, st.r2);
+      st.vth = +((5.0 * r2s) / (r1s + r2s)).toFixed(2);
+      st.rth = Math.round((r1s * r2s) / (r1s + r2s));
+      st.curr = +((st.vth / Math.max(50, st.rth + 100)) * 1000).toFixed(1);
+      st.ledOn = st.vth >= 1.5;
+      st.vout = st.vth;
+      st.powerMw = +((st.vth * st.curr)).toFixed(0);
+    } else if (st.topo === "isrc") {
+      st.curr = +st.iset.toFixed(1);
+      st.vout = +Math.min(12, (st.curr / 1000) * st.rload).toFixed(2);
+      st.ledOn = st.curr > 0;
+      st.powerMw = Math.round((st.curr / 1000) * (st.curr / 1000) * st.rload * 1000);
+    } else if (st.topo === "rc") {
+      const target = st.swA ? 5.0 : 0.0;
+      const tauSec = (st.res * st.capUf) / 100000;
+      const step = Math.min(0.35, 0.08 / Math.max(0.2, tauSec));
+      st.vc = +(st.vc + (target - st.vc) * step).toFixed(2);
+      st.curr = +Math.abs(((target - st.vc) / rSafe) * 1000).toFixed(1);
+      st.ledOn = st.vc > 1.8 || st.curr > 0.5;
+      st.vout = st.vc;
+      st.powerMw = Math.round((st.curr / 1000) * Math.abs(target - st.vc) * 1000);
+    } else if (st.topo === "filter_lp") {
+      const fc = 1 / (2 * Math.PI * st.res * (st.capUf * 1e-6));
+      const gain = 1 / Math.sqrt(1 + Math.pow(st.freq / Math.max(1, fc), 2));
+      st.vout = +(5.0 * gain).toFixed(2);
+      st.curr = +(st.vout / 220 * 1000).toFixed(1);
+      st.ledOn = st.vout >= 1.8;
+      st.powerMw = Math.round(st.curr * 0.5);
+    } else if (st.topo === "bjt_sw") {
+      const active = st.ib >= 25;
+      st.curr = active ? +Math.min(80, (5.0 - 1.8) / rSafe * 1000).toFixed(1) : 0;
+      st.ledOn = active && st.curr > 0;
+      st.vout = active ? +(5.0 - st.curr * rSafe / 1000).toFixed(2) : 5.0;
+      st.powerMw = Math.round((st.curr / 1000) * (st.curr / 1000) * rSafe * 1000);
+    } else if (st.topo === "amp") {
+      st.vout = +Math.min(5.0, st.vin * st.gain).toFixed(2);
+      st.curr = +(st.vout / 330 * 1000).toFixed(1);
+      st.ledOn = st.vout >= 1.5;
+      st.powerMw = Math.round(st.curr * 1.2);
+    } else if (st.topo === "mosfet") {
+      const active = st.vgs >= 3.0;
+      st.curr = active ? +((5.0 - 1.8) / rSafe * 1000).toFixed(1) : 0;
+      st.ledOn = active;
+      st.vout = active ? 1.8 : 5.0;
+      st.powerMw = Math.round((st.curr / 1000) * (st.curr / 1000) * rSafe * 1000);
+    } else if (st.topo === "sensor") {
+      let trig = false;
+      if (st.stype === "temp") trig = st.sval >= 35;
+      else if (st.stype === "light") trig = st.sval <= 25;
+      else trig = st.sval <= 20;
+      st.ledOn = trig;
+      st.curr = trig ? 12.5 : 0;
+      st.vout = trig ? 5.0 : 0.4;
+      st.powerMw = trig ? 38 : 1;
+    } else if (st.topo === "ne555") {
+      st.ledOn = (Math.floor(phase / Math.max(4, Math.round(60 / Math.max(0.5, st.freq)))) % 2) === 0;
+      st.curr = st.ledOn ? 14.0 : 1.2;
+      st.vout = st.ledOn ? 5.0 : 0.0;
+      st.powerMw = Math.round(st.curr * 2.0);
+    } else if (st.topo === "comp") {
+      st.ledOn = st.vin > st.vref;
+      st.curr = st.ledOn ? 11.0 : 0;
+      st.vout = st.ledOn ? 5.0 : 0.0;
+      st.powerMw = st.ledOn ? 33 : 0;
+    } else {
+      // Lazo general analógico (LED, Motor, Diodo estándar, Zener, Schottky)
+      let closed = st.swA === 1;
+      let vDrop = 2.0;
+      if (st.load === "motor") vDrop = 1.5;
+      else if (st.load === "diode_std") { closed = closed && (st.pol === 1); vDrop = 0.7; }
+      else if (st.load === "schottky") { closed = closed && (st.pol === 1); vDrop = 0.3; }
+      else if (st.load === "zener") { vDrop = 3.3; }
+
+      const iMa = closed ? Math.max(0, ((5.0 - vDrop) / rSafe) * 1000) : 0;
+      st.curr = +iMa.toFixed(1);
+      st.ledOn = closed && st.curr > 0.3;
+      st.vout = closed ? +Math.max(0, 5.0 - (st.curr / 1000) * rSafe).toFixed(2) : 0;
+      st.powerMw = Math.round((st.curr / 1000) * (st.curr / 1000) * rSafe * 1000);
+    }
+    st.y = st.ledOn ? 1 : 0;
+  } else {
+    st.binVal = (st.b3 ? 8 : 0) + (st.b2 ? 4 : 0) + (st.b1 ? 2 : 0) + (st.b0 ? 1 : 0);
+    if (st.topo === "latch") {
+      if (st.a === 1 && st.b === 0) st.q = 1;
+      else if (st.b === 1 && st.a === 0) st.q = 0;
+      st.y = st.q ? 1 : 0;
+    } else if (st.topo === "dlatch" || st.topo === "dff") {
+      if (st.b === 1) st.q = st.a ? 1 : 0;
+      st.y = st.q ? 1 : 0;
+    } else if (st.topo === "counter") {
+      st.cnt = ((st.cnt % 16) + 16) % 16;
+      st.b3 = (st.cnt >> 3) & 1; st.b2 = (st.cnt >> 2) & 1; st.b1 = (st.cnt >> 1) & 1; st.b0 = st.cnt & 1;
+      st.y = st.cnt > 0 ? 1 : 0;
+    } else if (st.topo === "seg7") {
+      st.digit = ((st.digit % 10) + 10) % 10;
+      st.y = 1;
+    } else if (st.topo === "adder") {
+      st.sum = (st.a ^ st.b) & 1;
+      st.carry = (st.a & st.b) & 1;
+      st.y = st.sum;
+    } else if (st.topo === "mux") {
+      st.y = st.b ? (st.a ? 1 : 0) : (st.a ? 1 : 0);
+    } else if (st.topo === "decoder") {
+      st.y = 1;
+    } else if (st.topo === "binary4") {
+      st.y = st.binVal > 0 ? 1 : 0;
+    } else {
+      const a = st.a ? 1 : 0, b = st.b ? 1 : 0;
+      if (st.gate === "BUF") st.y = a;
+      else if (st.gate === "NOT") st.y = a ? 0 : 1;
+      else if (st.gate === "AND") st.y = (a && b) ? 1 : 0;
+      else if (st.gate === "OR") st.y = (a || b) ? 1 : 0;
+      else if (st.gate === "NAND") st.y = (a && b) ? 0 : 1;
+      else if (st.gate === "NOR") st.y = (a || b) ? 0 : 1;
+      else if (st.gate === "XOR") st.y = (a !== b) ? 1 : 0;
+      else if (st.gate === "XNOR") st.y = (a === b) ? 1 : 0;
+    }
+    st.ledOn = st.y === 1;
+    st.curr = st.y === 1 ? 9.1 : 0;
+  }
+  return st;
+}
+
+/* ================= CANVAS CON FLUJO PROPORCIONAL DRAMÁTICO ================= */
+const cvs = $("bench");
+const ctx = cvs.getContext("2d");
+
+function drawFlowDots(pts, active, currentMa) {
+  if (!flowAnim || !active || currentMa <= 0) return;
+  const segs = [];
+  let total = 0;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const d = Math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]);
+    segs.push({ a: pts[i], b: pts[i + 1], d, s: total });
+    total += d;
+  }
+  if (!total) return;
+
+  // Escala dramática según corriente: de 5 mA (calma) hasta > 40 mA (torrente rojo/naranja)
+  const ratio = Math.min(1, Math.max(0, (currentMa - 5) / 45));
+  const speed = 1.1 + ratio * 9.5;
+  const dotRadius = 3.6 + ratio * 4.4;
+  const dotCount = Math.round(7 + ratio * 15);
+  const dotColor = currentMa > 35 ? "#ff4d4f" : (currentMa > 20 ? "#ff9f1c" : "#ffd166");
+
+  ctx.fillStyle = dotColor;
+  for (let k = 0; k < dotCount; k++) {
+    const pos = ((phase * speed + k * (total / dotCount)) % total + total) % total;
+    const sg = segs.find(x => pos >= x.s && pos <= x.s + x.d) || segs[0];
+    const t = sg.d ? (pos - sg.s) / sg.d : 0;
+    ctx.beginPath();
+    ctx.arc(sg.a[0] + (sg.b[0] - sg.a[0]) * t, sg.a[1] + (sg.b[1] - sg.a[1]) * t, dotRadius, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function drawResistorSym(x1, x2, y, stroke, label) {
+  const segs = 6, len = (x2 - x1) / segs, amp = 11;
+  ctx.strokeStyle = stroke; ctx.lineWidth = 2.6; ctx.lineJoin = "round";
+  ctx.beginPath();
+  ctx.moveTo(x1, y);
+  for (let i = 1; i < segs; i++) {
+    ctx.lineTo(x1 + i * len, y + (i % 2 === 1 ? -amp : amp));
+  }
+  ctx.lineTo(x2, y);
+  ctx.stroke();
+  ctx.fillStyle = stroke; ctx.font = "bold 12px monospace"; ctx.textAlign = "center";
+  ctx.fillText(label, (x1 + x2) / 2, y - 18);
+}
+
+function drawSwitchSym(x1, x2, y, closed, stroke, label) {
+  ctx.strokeStyle = stroke; ctx.lineWidth = 2.6;
+  ctx.beginPath(); ctx.moveTo(x1, y); ctx.lineTo(x1 + 14, y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x2 - 14, y); ctx.lineTo(x2, y); ctx.stroke();
+  ctx.beginPath(); ctx.arc(x1 + 14, y, 4, 0, Math.PI * 2); ctx.arc(x2 - 14, y, 4, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x1 + 14, y); ctx.lineTo(x2 - 14, closed ? y : y - 18); ctx.stroke();
+  ctx.fillStyle = stroke; ctx.font = "bold 12px Arial"; ctx.textAlign = "center";
+  ctx.fillText(label, (x1 + x2) / 2, y - 24);
+}
+
+function drawBatterySym(x, yCenter, isDark) {
+  const ink = isDark ? "#e5f0fa" : "#0f2942";
+  ctx.strokeStyle = "#2a78c8"; ctx.lineWidth = 2.8;
+  ctx.beginPath();
+  ctx.moveTo(x - 22, yCenter - 12); ctx.lineTo(x + 22, yCenter - 12);
+  ctx.moveTo(x - 11, yCenter + 12); ctx.lineTo(x + 11, yCenter + 12);
+  ctx.stroke();
+  ctx.fillStyle = ink; ctx.font = "bold 12.5px Arial"; ctx.textAlign = "right";
+  ctx.fillText("+ 5V", x - 28, yCenter - 8);
+  ctx.fillText("GND", x - 28, yCenter + 16);
+}
+
+function drawLedSym(x, y, on, highCurr, isDark) {
+  const ink = isDark ? "#e5f0fa" : "#0f2942";
+  const cFill = !on ? "#8da3b8" : (highCurr ? "#ef4444" : "#2a78c8");
+  if (on) {
+    const gr = ctx.createRadialGradient(x, y, 4, x, y, highCurr ? 72 : 46);
+    gr.addColorStop(0, highCurr ? "rgba(239,68,68,.72)" : "rgba(42,120,200,.45)");
+    gr.addColorStop(1, "rgba(42,120,200,0)");
+    ctx.fillStyle = gr;
+    ctx.beginPath(); ctx.arc(x, y, highCurr ? 72 : 46, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.fillStyle = cFill; ctx.strokeStyle = ink; ctx.lineWidth = 2.4; ctx.lineJoin = "round";
+  ctx.beginPath();
+  ctx.moveTo(x - 16, y - 14); ctx.lineTo(x + 16, y - 14); ctx.lineTo(x, y + 12);
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x - 16, y + 12); ctx.lineTo(x + 16, y + 12); ctx.stroke();
+}
+
+function drawMotorSym(x, y, spinning, isDark) {
+  const ink = isDark ? "#e5f0fa" : "#0f2942";
+  ctx.fillStyle = spinning ? "#2a78c8" : "#8da3b8";
+  ctx.strokeStyle = ink; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.arc(x, y, 24, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#ffffff"; ctx.font = "bold 14px Arial"; ctx.textAlign = "center";
+  ctx.fillText("M", x, y + 5);
+  if (spinning) {
+    const ang = phase * 0.16;
+    ctx.strokeStyle = "#ffd166"; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(x, y, 31, ang, ang + 1.4);
+    ctx.stroke();
+  }
+}
+
+function drawGateSymbol(gate, cx, cy, isDark) {
+  const ink = isDark ? "#e5f0fa" : "#0f2942";
+  const boxFill = isDark ? "#132940" : "#ffffff";
+  ctx.strokeStyle = ink; ctx.fillStyle = boxFill; ctx.lineWidth = 2.6; ctx.lineJoin = "round";
+
+  if (gate === "BUF" || gate === "NOT") {
+    const x0 = cx - 32, x1 = cx + 24, yTop = cy - 30, yBot = cy + 30;
+    ctx.beginPath(); ctx.moveTo(x0, yTop); ctx.lineTo(x1, cy); ctx.lineTo(x0, yBot); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    if (gate === "NOT") { ctx.beginPath(); ctx.arc(x1 + 7, cy, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+    ctx.fillStyle = ink; ctx.font = "bold 11px monospace"; ctx.textAlign = "center";
+    ctx.fillText(gate, cx - 8, cy + 4);
+    return { inA: [x0, cy], inB: null, out: [gate === "NOT" ? x1 + 14 : x1, cy] };
+  }
+
+  if (gate === "AND" || gate === "NAND") {
+    const xL = cx - 36, yT = cy - 32, yB = cy + 32, r = 32, xArc = cx + 4;
+    ctx.beginPath();
+    ctx.moveTo(xArc, yT); ctx.lineTo(xL, yT); ctx.lineTo(xL, yB); ctx.lineTo(xArc, yB);
+    ctx.arc(xArc, cy, r, Math.PI / 2, -Math.PI / 2, true);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    const outX = xArc + r;
+    if (gate === "NAND") { ctx.beginPath(); ctx.arc(outX + 7, cy, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+    ctx.fillStyle = ink; ctx.font = "bold 11px monospace"; ctx.textAlign = "center";
+    ctx.fillText(gate, cx - 8, cy + 4);
+    return { inA: [xL, cy - 16], inB: [xL, cy + 16], out: [gate === "NAND" ? outX + 14 : outX, cy] };
+  }
+
+  const xL = cx - 40, yT = cy - 32, yB = cy + 32, xTip = cx + 38;
+  if (gate === "XOR" || gate === "XNOR") {
+    ctx.beginPath(); ctx.moveTo(xL - 8, yT); ctx.quadraticCurveTo(xL + 8, cy, xL - 8, yB); ctx.stroke();
+  }
+  ctx.beginPath();
+  ctx.moveTo(xL, yT); ctx.quadraticCurveTo(xL + 36, yT, xTip, cy);
+  ctx.quadraticCurveTo(xL + 36, yB, xL, yB); ctx.quadraticCurveTo(xL + 16, cy, xL, yT);
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+  const outX = xTip;
+  if (gate === "NOR" || gate === "XNOR") { ctx.beginPath(); ctx.arc(outX + 7, cy, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+  ctx.fillStyle = ink; ctx.font = "bold 11px monospace"; ctx.textAlign = "center";
+  ctx.fillText(gate, cx - 2, cy + 4);
+  return { inA: [xL + 6, cy - 16], inB: [xL + 6, cy + 16], out: [gate === "NOR" || gate === "XNOR" ? outX + 14 : outX, cy] };
+}
+
+function drawAnalogCanvas(s, isDark) {
+  const ink = isDark ? "#e5f0fa" : "#0f2942";
+  const wireIdle = isDark ? "#6b8fb3" : "#567594";
+  const wireHot = s.curr > 35 ? "#ef4444" : "#2a78c8";
+  const cLoop = s.ledOn ? wireHot : wireIdle;
+
+  if (st.topo === "delta_y") {
+    ctx.strokeStyle = ink; ctx.lineWidth = 2.4;
+    // Triángulo Delta a la izquierda
+    ctx.beginPath(); ctx.moveTo(210, 170); ctx.lineTo(130, 360); ctx.lineTo(290, 360); ctx.closePath(); ctx.stroke();
+    ctx.fillStyle = ink; ctx.font = "bold 12px monospace"; ctx.textAlign = "center";
+    ctx.fillText("Ra=" + st.ra + "Ω", 155, 255);
+    ctx.fillText("Rc=" + st.rc + "Ω", 265, 255);
+    ctx.fillText("Rb=" + st.rb + "Ω", 210, 382);
+    ctx.fillText("RED Δ", 210, 140);
+
+    // Estrella Y a la derecha
+    ctx.strokeStyle = "#2a78c8"; ctx.lineWidth = 2.6;
+    ctx.beginPath();
+    ctx.moveTo(540, 270); ctx.lineTo(540, 165);
+    ctx.moveTo(540, 270); ctx.lineTo(445, 365);
+    ctx.moveTo(540, 270); ctx.lineTo(635, 365);
+    ctx.stroke();
+    ctx.fillStyle = "#2a78c8";
+    ctx.fillText("R1=" + st.ry1 + "Ω", 540, 145);
+    ctx.fillText("R2=" + st.ry2 + "Ω", 435, 390);
+    ctx.fillText("R3=" + st.ry3 + "Ω", 645, 390);
+    ctx.fillText("EQUIVALENTE Y", 540, 115);
+    return;
+  }
+
+  if (st.topo === "thevenin") {
+    ctx.strokeStyle = "#2a78c8"; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(150, 150); ctx.lineTo(310, 150); ctx.lineTo(310, 420); ctx.lineTo(150, 420); ctx.closePath(); ctx.stroke();
+    drawBatterySym(150, 285, isDark);
+    drawResistorSym(180, 280, 150, "#2a78c8", "R1=" + st.r1 + "Ω");
+    ctx.fillStyle = ink; ctx.font = "bold 12px monospace"; ctx.textAlign = "left";
+    ctx.fillText("R2=" + st.r2 + "Ω", 322, 290);
+
+    ctx.strokeStyle = "#1b5fa7";
+    ctx.beginPath(); ctx.moveTo(470, 200); ctx.lineTo(640, 200); ctx.lineTo(640, 380); ctx.lineTo(470, 380); ctx.closePath(); ctx.stroke();
+    ctx.fillStyle = ink; ctx.textAlign = "center";
+    ctx.fillText("THÉVENIN EQUIVALENTE", 555, 130);
+    ctx.fillText("Vth = " + st.vth + " V", 555, 165);
+    ctx.fillText("Rth = " + st.rth + " Ω", 555, 188);
+    return;
+  }
+
+  // Lazo general / carga / sensores / transistores / 555 / filtros
+  drawBatterySym(145, 290, isDark);
+  ctx.strokeStyle = cLoop; ctx.lineWidth = 3; ctx.lineJoin = "round";
+  ctx.beginPath(); ctx.moveTo(145, 278); ctx.lineTo(145, 140); ctx.lineTo(255, 140); ctx.stroke();
+
+  drawSwitchSym(255, 395, 140, st.swA === 1 || st.topo !== "single", cLoop, st.topo === "single" ? "SW" : st.topo.toUpperCase());
+  drawResistorSym(395, 550, 140, cLoop, st.res + " Ω");
+
+  ctx.strokeStyle = cLoop;
+  ctx.beginPath(); ctx.moveTo(550, 140); ctx.lineTo(645, 140); ctx.lineTo(645, 255); ctx.stroke();
+
+  if (st.load === "motor") {
+    drawMotorSym(645, 285, st.ledOn, isDark);
+  } else {
+    drawLedSym(645, 285, st.ledOn, st.curr > 25, isDark);
+  }
+
+  ctx.strokeStyle = cLoop; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(645, 315); ctx.lineTo(645, 450); ctx.lineTo(145, 450); ctx.lineTo(145, 302); ctx.stroke();
+
+  ctx.fillStyle = ink; ctx.font = "bold 12px monospace"; ctx.textAlign = "center";
+  ctx.fillText("I = " + st.curr.toFixed(1) + " mA · Vout = " + st.vout.toFixed(2) + " V · P = " + st.powerMw + " mW", 400, 492);
+
+  drawFlowDots([[145,278],[145,140],[645,140],[645,450],[145,450],[145,302]], st.ledOn, st.curr);
+}
+
+function drawDigitalCanvas(s, isDark) {
+  const ink = isDark ? "#e5f0fa" : "#0f2942";
+  const hiColor = "#2a78c8";
+  const loColor = isDark ? "#6687a6" : "#7c96b0";
+
+  if (st.topo === "binary4" || st.topo === "counter") {
+    const bits = [st.b3, st.b2, st.b1, st.b0];
+    const weights = [8, 4, 2, 1];
+    ctx.fillStyle = ink; ctx.font = "bold 13px Arial"; ctx.textAlign = "center";
+    ctx.fillText(st.topo === "counter" ? "CONTADOR BINARIO DE 4 BITS" : "REGISTRO BINARIO DE 4 BITS", 400, 140);
+
+    bits.forEach((bit, idx) => {
+      const bx = 185 + idx * 140;
+      ctx.fillStyle = bit ? hiColor : (isDark ? "#172e47" : "#e8f1fa");
+      ctx.strokeStyle = bit ? hiColor : loColor;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.roundRect(bx - 38, 210, 76, 76, 12); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = bit ? "#ffffff" : ink;
+      ctx.font = "bold 24px monospace";
+      ctx.fillText(String(bit), bx, 256);
+      ctx.fillStyle = ink; ctx.font = "bold 12px monospace";
+      ctx.fillText("peso " + weights[idx], bx, 312);
+    });
+
+    ctx.fillStyle = hiColor; ctx.font = "bold 22px monospace";
+    ctx.fillText("Decimal = " + (st.topo === "counter" ? st.cnt : st.binVal), 400, 405);
+    return;
+  }
+
+  if (st.topo === "seg7") {
+    const maps = {
+      0: [1,1,1,1,1,1,0], 1: [0,1,1,0,0,0,0], 2: [1,1,0,1,1,0,1], 3: [1,1,1,1,0,0,1],
+      4: [0,1,1,0,0,1,1], 5: [1,0,1,1,0,1,1], 6: [1,0,1,1,1,1,1], 7: [1,1,1,0,0,0,0],
+      8: [1,1,1,1,1,1,1], 9: [1,1,1,1,0,1,1]
+    };
+    const segs = maps[st.digit] || maps[0];
+    const onC = "#2a78c8", offC = isDark ? "#1c334a" : "#e2ecf6";
+    const x = 355, y = 175, w = 86, h = 150;
+
+    const drawBar = (rx, ry, rw, rh, active) => {
+      ctx.fillStyle = active ? onC : offC;
+      ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 6); ctx.fill();
+    };
+    drawBar(x + 12, y, w - 24, 12, segs[0]); // a
+    drawBar(x + w - 12, y + 12, 12, h / 2 - 18, segs[1]); // b
+    drawBar(x + w - 12, y + h / 2 + 6, 12, h / 2 - 18, segs[2]); // c
+    drawBar(x + 12, y + h - 12, w - 24, 12, segs[3]); // d
+    drawBar(x, y + h / 2 + 6, 12, h / 2 - 18, segs[4]); // e
+    drawBar(x, y + 12, 12, h / 2 - 18, segs[5]); // f
+    drawBar(x + 12, y + h / 2 - 6, w - 24, 12, segs[6]); // g
+
+    ctx.fillStyle = ink; ctx.font = "bold 18px monospace"; ctx.textAlign = "center";
+    ctx.fillText("DÍGITO: " + st.digit, 400, 385);
+    return;
+  }
+
+  // Compuertas / Latch / Flip-Flop / Sumador / MUX / Decodificador
+  const drawPin = (label, val, px, py) => {
+    ctx.fillStyle = val ? hiColor : (isDark ? "#172e47" : "#e8f1fa");
+    ctx.strokeStyle = val ? hiColor : loColor;
+    ctx.lineWidth = 2.4;
+    ctx.beginPath(); ctx.arc(px, py, 22, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = val ? "#ffffff" : ink;
+    ctx.font = "bold 13px monospace"; ctx.textAlign = "center";
+    ctx.fillText(label + "=" + val, px, py + 5);
+  };
+
+  const showB = !(st.gate === "BUF" || st.gate === "NOT");
+  drawPin("A", st.a, 140, showB ? 210 : 280);
+  if (showB) drawPin("B", st.b, 140, 360);
+
+  const gateLabel = st.topo === "latch" ? "SR-L" : (st.topo === "dlatch" ? "D-L" : (st.topo === "dff" ? "DFF" : (st.topo === "adder" ? "ADD" : (st.topo === "mux" ? "MUX" : (st.topo === "decoder" ? "DEC" : st.gate)))));
+  const ports = drawGateSymbol(st.gate, 400, 280, isDark);
+  ctx.fillStyle = hiColor; ctx.font = "bold 12px monospace"; ctx.textAlign = "center";
+  ctx.fillText("BLOQUE: " + gateLabel, 400, 145);
+
+  ctx.strokeStyle = st.a ? hiColor : loColor; ctx.lineWidth = 3.2;
+  ctx.beginPath(); ctx.moveTo(162, showB ? 210 : 280); ctx.lineTo(ports.inA[0], ports.inA[1]); ctx.stroke();
+
+  if (showB && ports.inB) {
+    ctx.strokeStyle = st.b ? hiColor : loColor; ctx.lineWidth = 3.2;
+    ctx.beginPath(); ctx.moveTo(162, 360); ctx.lineTo(ports.inB[0], ports.inB[1]); ctx.stroke();
+  }
+
+  ctx.strokeStyle = st.y ? hiColor : loColor; ctx.lineWidth = 3.2;
+  ctx.beginPath(); ctx.moveTo(ports.out[0], ports.out[1]); ctx.lineTo(630, 280); ctx.stroke();
+
+  ctx.fillStyle = st.y ? "#2a78c8" : "#8da3b8";
+  ctx.strokeStyle = ink; ctx.lineWidth = 2.4;
+  ctx.beginPath(); ctx.arc(655, 280, 24, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#ffffff"; ctx.font = "bold 12px monospace"; ctx.textAlign = "center";
+  ctx.fillText("Y=" + st.y, 655, 284);
+
+  if (st.topo === "adder") {
+    ctx.fillStyle = ink; ctx.font = "bold 13px monospace";
+    ctx.fillText("Suma(S)=" + st.sum + " · Acarreo(C)=" + st.carry, 400, 415);
+  } else if (st.topo === "latch" || st.topo === "dlatch" || st.topo === "dff") {
+    ctx.fillStyle = ink; ctx.font = "bold 13px monospace";
+    ctx.fillText("Estado memorizado Q = " + st.q, 400, 415);
+  }
+
+  drawFlowDots([[ports.out[0], ports.out[1]], [630, 280]], st.y === 1, 20);
+}
+
+function drawBench() {
+  const s = computeState();
+  const isDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  ctx.clearRect(0, 0, 800, 600);
+  ctx.fillStyle = isDark ? "#0d1c2b" : "#fbfdff";
+  ctx.fillRect(0, 0, 800, 600);
+
+  ctx.strokeStyle = isDark ? "rgba(123,184,245,.07)" : "rgba(27,95,167,.07)";
+  ctx.lineWidth = 1;
+  for (let x = 0; x <= 800; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 600); ctx.stroke(); }
+  for (let y = 0; y <= 600; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(800, y); ctx.stroke(); }
+
+  if (track === "analog") {
+    drawAnalogCanvas(s, isDark);
+    $("m1Lbl").textContent = "Corriente (I)";
+    $("m1Val").textContent = s.curr.toFixed(1) + " mA";
+    $("m2Lbl").textContent = "Elemento / Estado";
+    $("m2Val").textContent = st.topo === "delta_y" ? ("R1=" + st.ry1 + "Ω") : (st.topo === "thevenin" ? ("Vth=" + st.vth + "V") : (s.curr > 35 ? "¡TORRENTE!" : (s.ledOn ? "Activo" : "Reposo")));
+    $("m3Lbl").textContent = "Tensión / Potencia";
+    $("m3Val").textContent = s.vout.toFixed(2) + "V · " + s.powerMw + "mW";
+  } else {
+    drawDigitalCanvas(s, isDark);
+    $("m1Lbl").textContent = st.topo === "binary4" || st.topo === "counter" ? "Decimal" : "Entrada A";
+    $("m1Val").textContent = st.topo === "counter" ? String(st.cnt) : (st.topo === "binary4" ? String(st.binVal) : String(st.a));
+    $("m2Lbl").textContent = st.topo === "seg7" ? "Dígito 7-Seg" : (st.topo === "adder" ? "Acarreo (C)" : "Entrada B");
+    $("m2Val").textContent = st.topo === "seg7" ? String(st.digit) : (st.topo === "adder" ? String(st.carry) : String(st.b));
+    $("m3Lbl").textContent = "Salida (Y)";
+    $("m3Val").textContent = s.y + (s.y ? " (1 · HIGH)" : " (0 · LOW)");
+  }
+
+  document.querySelectorAll("tr[data-row]").forEach(tr => {
+    const ra = +tr.dataset.a, rb = +tr.dataset.b;
+    const match = (st.gate === "BUF" || st.gate === "NOT") ? (ra === st.a) : (ra === st.a && rb === st.b);
+    tr.classList.toggle("cur", match);
+  });
+}
+
+function tick() {
+  if (flowAnim) phase = (phase + 1) % 100000;
+  drawBench();
+  requestAnimationFrame(tick);
+}
+
+/* ================= CONTROLES INTERACTIVOS ================= */
+function renderControls() {
+  const box = $("controls");
+  let html = "";
+
+  if (track === "analog") {
+    if (st.topo === "delta_y") {
+      ["ra","rb","rc"].forEach((k, idx) => {
+        const lbl = ["Ra (Δ)", "Rb (Δ)", "Rc (Δ)"][idx];
+        html += '<div class="ctrl-row"><label for="' + k + 'R">' + lbl + '</label><div class="range-wrap">';
+        html += '<input id="' + k + 'R" type="range" min="100" max="900" step="50" value="' + st[k] + '">';
+        html += '<span class="range-val" id="' + k + 'V">' + st[k] + ' Ω</span></div></div>';
+      });
+    } else if (st.topo === "thevenin") {
+      html += '<div class="ctrl-row"><label for="r1R">Resistencia R1</label><div class="range-wrap"><input id="r1R" type="range" min="100" max="680" step="10" value="' + st.r1 + '"><span class="range-val" id="r1V">' + st.r1 + ' Ω</span></div></div>';
+      html += '<div class="ctrl-row"><label for="r2R">Resistencia R2</label><div class="range-wrap"><input id="r2R" type="range" min="100" max="680" step="10" value="' + st.r2 + '"><span class="range-val" id="r2V">' + st.r2 + ' Ω</span></div></div>';
+    } else if (st.topo === "isrc") {
+      html += '<div class="ctrl-row"><label for="isetR">Corriente Fuente</label><div class="range-wrap"><input id="isetR" type="range" min="5" max="30" step="5" value="' + st.iset + '"><span class="range-val" id="isetV">' + st.iset + ' mA</span></div></div>';
+      html += '<div class="ctrl-row"><label for="rloadR">Resistencia Carga</label><div class="range-wrap"><input id="rloadR" type="range" min="100" max="680" step="10" value="' + st.rload + '"><span class="range-val" id="rloadV">' + st.rload + ' Ω</span></div></div>';
+    } else if (st.topo === "rc" || st.topo === "filter_lp") {
+      html += '<div class="ctrl-row"><label>Interruptor</label><div class="sw"><button type="button" data-swa="0" class="' + (!st.swA ? "active" : "") + '">Abierto</button><button type="button" data-swa="1" class="' + (st.swA ? "active" : "") + '">Cerrado</button></div></div>';
+      html += '<div class="ctrl-row"><label for="capR">Capacitor (C)</label><div class="range-wrap"><input id="capR" type="range" min="47" max="470" step="1" value="' + st.capUf + '"><span class="range-val" id="capV">' + st.capUf + ' µF</span></div></div>';
+      if (st.topo === "filter_lp") {
+        html += '<div class="ctrl-row"><label for="freqR">Frecuencia</label><div class="range-wrap"><input id="freqR" type="range" min="20" max="2000" step="20" value="' + st.freq + '"><span class="range-val" id="freqV">' + st.freq + ' Hz</span></div></div>';
+      }
+    } else if (st.topo === "bjt_sw") {
+      html += '<div class="ctrl-row"><label for="ibR">Corriente Base (Ib)</label><div class="range-wrap"><input id="ibR" type="range" min="0" max="150" step="5" value="' + st.ib + '"><span class="range-val" id="ibV">' + st.ib + ' µA</span></div></div>';
+    } else if (st.topo === "amp") {
+      html += '<div class="ctrl-row"><label for="vinR">Entrada Vin</label><div class="range-wrap"><input id="vinR" type="range" min="0.1" max="1.0" step="0.1" value="' + st.vin + '"><span class="range-val" id="vinV">' + st.vin.toFixed(1) + ' V</span></div></div>';
+      html += '<div class="ctrl-row"><label for="gainR">Ganancia</label><div class="range-wrap"><input id="gainR" type="range" min="1" max="10" step="1" value="' + st.gain + '"><span class="range-val" id="gainV">' + st.gain + 'x</span></div></div>';
+    } else if (st.topo === "mosfet") {
+      html += '<div class="ctrl-row"><label for="vgsR">Tensión Vgs</label><div class="range-wrap"><input id="vgsR" type="range" min="0" max="5" step="0.5" value="' + st.vgs + '"><span class="range-val" id="vgsV">' + st.vgs.toFixed(1) + ' V</span></div></div>';
+    } else if (st.topo === "sensor") {
+      html += '<div class="ctrl-row"><label>Sensor</label><div class="sw">';
+      [["temp","Temp (°C)"],["light","Luz (%)"],["dist","Dist (cm)"]].forEach(item => {
+        html += '<button type="button" data-st="' + item[0] + '" class="' + (st.stype === item[0] ? "active" : "") + '">' + item[1] + '</button>';
+      });
+      html += '</div></div>';
+      html += '<div class="ctrl-row"><label for="svR">Lectura Sensor</label><div class="range-wrap"><input id="svR" type="range" min="0" max="100" step="1" value="' + st.sval + '"><span class="range-val" id="svV">' + st.sval + '</span></div></div>';
+    } else if (st.topo === "ne555") {
+      html += '<div class="ctrl-row"><label for="nfR">Frecuencia</label><div class="range-wrap"><input id="nfR" type="range" min="0.5" max="10" step="0.5" value="' + st.freq + '"><span class="range-val" id="nfV">' + st.freq.toFixed(1) + ' Hz</span></div></div>';
+      html += '<div class="ctrl-row"><label for="ndR">Ciclo Útil</label><div class="range-wrap"><input id="ndR" type="range" min="10" max="90" step="5" value="' + st.duty + '"><span class="range-val" id="ndV">' + st.duty + '%</span></div></div>';
+    } else if (st.topo === "comp") {
+      html += '<div class="ctrl-row"><label for="cvR">Voltaje Vin</label><div class="range-wrap"><input id="cvR" type="range" min="0" max="5" step="0.1" value="' + st.vin + '"><span class="range-val" id="cvV">' + st.vin.toFixed(1) + ' V</span></div></div>';
+      html += '<div class="ctrl-row"><label for="vrR">Referencia Vref</label><div class="range-wrap"><input id="vrR" type="range" min="0.5" max="4.5" step="0.1" value="' + st.vref + '"><span class="range-val" id="vrV">' + st.vref.toFixed(1) + ' V</span></div></div>';
+    } else {
+      html += '<div class="ctrl-row"><label>Interruptor</label><div class="sw"><button type="button" data-swa="0" class="' + (!st.swA ? "active" : "") + '">Abierto</button><button type="button" data-swa="1" class="' + (st.swA ? "active" : "") + '">Cerrado</button></div></div>';
+      html += '<div class="ctrl-row"><label>Carga / Diodo</label><div class="sw">';
+      [["led","LED"],["motor","Motor"],["diode_std","Diodo"],["zener","Zener"],["schottky","Schottky"]].forEach(item => {
+        html += '<button type="button" data-ld="' + item[0] + '" class="' + (st.load === item[0] ? "active" : "") + '">' + item[1] + '</button>';
+      });
+      html += '</div></div>';
+      if (st.load === "diode_std" || st.load === "zener" || st.load === "schottky") {
+        html += '<div class="ctrl-row"><label>Polaridad</label><div class="sw"><button type="button" data-pol="1" class="' + (st.pol === 1 ? "active" : "") + '">Directa (+)</button><button type="button" data-pol="-1" class="' + (st.pol === -1 ? "active" : "") + '">Inversa (-)</button></div></div>';
+      }
+    }
+
+    if (st.topo !== "delta_y" && st.topo !== "thevenin" && st.topo !== "isrc") {
+      html += '<div class="ctrl-row"><label for="resRange">Resistencia (R)</label><div class="range-wrap"><input id="resRange" type="range" min="10" max="1000" step="1" value="' + st.res + '"><span class="range-val" id="resVal">' + st.res + ' Ω</span></div></div>';
+    }
+    $("modeTag").textContent = "Análogo · " + st.topo.toUpperCase();
+  } else {
+    if (st.topo === "binary4") {
+      [["b3","Bit 3 (8)"],["b2","Bit 2 (4)"],["b1","Bit 1 (2)"],["b0","Bit 0 (1)"]].forEach(b => {
+        html += '<div class="ctrl-row"><label>' + b[1] + '</label><div class="sw"><button type="button" data-bit="' + b[0] + '" data-val="0" class="' + (!st[b[0]] ? "active" : "") + '">0</button><button type="button" data-bit="' + b[0] + '" data-val="1" class="' + (st[b[0]] ? "active" : "") + '">1</button></div></div>';
+      });
+    } else if (st.topo === "counter") {
+      html += '<div class="ctrl-row"><label>Pulsos de reloj</label><div class="sw"><button type="button" id="plusPulse">+1 Pulso</button><button type="button" id="minusPulse">-1 Pulso</button><button type="button" id="zeroCnt">Reiniciar (0)</button></div></div>';
+    } else if (st.topo === "seg7") {
+      html += '<div class="ctrl-row"><label for="segSel">Dígito (0–9)</label><select id="segSel">';
+      for (let d = 0; d <= 9; d++) html += '<option value="' + d + '"' + (st.digit === d ? " selected" : "") + '>Dígito ' + d + '</option>';
+      html += '</select></div>';
+    } else {
+      html += '<div class="ctrl-row"><label>' + (st.topo === "latch" ? "Set (A)" : (st.topo === "dlatch" || st.topo === "dff" ? "Dato D (A)" : "Entrada A")) + '</label><div class="sw"><button type="button" data-da="0" class="' + (!st.a ? "active" : "") + '">0</button><button type="button" data-da="1" class="' + (st.a ? "active" : "") + '">1</button></div></div>';
+      const showB = !(st.gate === "BUF" || st.gate === "NOT");
+      if (showB) {
+        html += '<div class="ctrl-row"><label>' + (st.topo === "latch" ? "Reset (B)" : (st.topo === "dlatch" ? "Enable (B)" : (st.topo === "dff" ? "Reloj CLK (B)" : "Entrada B"))) + '</label><div class="sw"><button type="button" data-db="0" class="' + (!st.b ? "active" : "") + '">0</button><button type="button" data-db="1" class="' + (st.b ? "active" : "") + '">1</button></div></div>';
+      }
+      if (!st.topo || st.topo === "gates") {
+        html += '<div class="ctrl-row"><label for="gateSel">Compuerta</label><select id="gateSel">';
+        ["BUF","NOT","AND","OR","NAND","NOR","XOR","XNOR"].forEach(g => html += '<option value="' + g + '"' + (st.gate === g ? " selected" : "") + '>' + g + '</option>');
+        html += '</select></div>';
+      }
+    }
+    $("modeTag").textContent = "Digital · " + (st.topo || st.gate).toUpperCase();
+  }
+
+  box.innerHTML = html;
+
+  // Bindings
+  box.querySelectorAll("[data-swa]").forEach(b => b.onclick = () => { st.swA = +b.dataset.swa; renderControls(); drawBench(); });
+  box.querySelectorAll("[data-ld]").forEach(b => b.onclick = () => { st.load = b.dataset.ld; renderControls(); drawBench(); });
+  box.querySelectorAll("[data-pol]").forEach(b => b.onclick = () => { st.pol = +b.dataset.pol; renderControls(); drawBench(); });
+  box.querySelectorAll("[data-st]").forEach(b => b.onclick = () => { st.stype = b.dataset.st; renderControls(); drawBench(); });
+  box.querySelectorAll("[data-da]").forEach(b => b.onclick = () => { st.a = +b.dataset.da; renderControls(); drawBench(); });
+  box.querySelectorAll("[data-db]").forEach(b => b.onclick = () => { st.b = +b.dataset.db; renderControls(); drawBench(); });
+  box.querySelectorAll("[data-bit]").forEach(b => b.onclick = () => { st[b.dataset.bit] = +b.dataset.val; renderControls(); drawBench(); });
+
+  const bindRange = (idR, idV, prop, suffix, dec = 0) => {
+    const el = $(idR);
+    if (el) el.oninput = () => {
+      st[prop] = +el.value;
+      $(idV).textContent = (dec ? st[prop].toFixed(dec) : st[prop]) + suffix;
+      drawBench();
+    };
+  };
+  bindRange("resRange", "resVal", "res", " Ω");
+  bindRange("raR", "raV", "ra", " Ω");
+  bindRange("rbR", "rbV", "rb", " Ω");
+  bindRange("rcR", "rcV", "rc", " Ω");
+  bindRange("r1R", "r1V", "r1", " Ω");
+  bindRange("r2R", "r2V", "r2", " Ω");
+  bindRange("isetR", "isetV", "iset", " mA");
+  bindRange("rloadR", "rloadV", "rload", " Ω");
+  bindRange("capR", "capV", "capUf", " µF");
+  bindRange("freqR", "freqV", "freq", " Hz");
+  bindRange("ibR", "ibV", "ib", " µA");
+  bindRange("vinR", "vinV", "vin", " V", 1);
+  bindRange("gainR", "gainV", "gain", "x");
+  bindRange("vgsR", "vgsV", "vgs", " V", 1);
+  bindRange("svR", "svV", "sval", "");
+  bindRange("nfR", "nfV", "freq", " Hz", 1);
+  bindRange("ndR", "ndV", "duty", "%");
+  bindRange("cvR", "cvV", "vin", " V", 1);
+  bindRange("vrR", "vrV", "vref", " V", 1);
+
+  if ($("plusPulse")) $("plusPulse").onclick = () => { st.cnt = (st.cnt + 1) % 16; drawBench(); };
+  if ($("minusPulse")) $("minusPulse").onclick = () => { st.cnt = (st.cnt + 15) % 16; drawBench(); };
+  if ($("zeroCnt")) $("zeroCnt").onclick = () => { st.cnt = 0; drawBench(); };
+  if ($("segSel")) $("segSel").onchange = e => { st.digit = +e.target.value; drawBench(); };
+  if ($("gateSel")) $("gateSel").onchange = e => { st.gate = e.target.value; renderControls(); renderTruthTable(); drawBench(); };
+}
+
+function renderTruthTable() {
+  const panel = $("extraPanel");
+  if (track !== "digital" || (st.topo && st.topo !== "gates")) { panel.innerHTML = ""; return; }
+  if (st.gate === "BUF" || st.gate === "NOT") {
+    const fn = a => st.gate === "BUF" ? a : (a ? 0 : 1);
+    panel.innerHTML = '<table class="table-mini"><thead><tr><th>A</th><th>Salida Y (' + st.gate + ')</th></tr></thead><tbody>' +
+      [0,1].map(a => '<tr data-row data-a="' + a + '" data-b="0"><td>' + a + '</td><td>' + fn(a) + '</td></tr>').join("") + '</tbody></table>';
+  } else {
+    const fn = (a, b) => {
+      if (st.gate === "AND") return (a && b) ? 1 : 0;
+      if (st.gate === "OR") return (a || b) ? 1 : 0;
+      if (st.gate === "NAND") return (a && b) ? 0 : 1;
+      if (st.gate === "NOR") return (a || b) ? 0 : 1;
+      if (st.gate === "XOR") return (a !== b) ? 1 : 0;
+      return (a === b) ? 1 : 0;
+    };
+    panel.innerHTML = '<table class="table-mini"><thead><tr><th>A</th><th>B</th><th>Salida Y (' + st.gate + ')</th></tr></thead><tbody>' +
+      [[0,0],[0,1],[1,0],[1,1]].map(p => '<tr data-row data-a="' + p[0] + '" data-b="' + p[1] + '"><td>' + p[0] + '</td><td>' + p[1] + '</td><td>' + fn(p[0], p[1]) + '</td></tr>').join("") + '</tbody></table>';
+  }
+}
+
+function renderWorlds() {
+  const worlds = listForTrack(track);
+  $("sideTitle").textContent = track === "digital" ? "Mundos digitales (20)" : "Mundos análogos (20)";
+  $("worlds").innerHTML = "";
+  worlds.forEach((w, i) => {
+    const n = w.r.filter((_, j) => done.has(key(track, i, j))).length;
+    const all = n === w.r.length;
+    const b = document.createElement("button");
+    b.className = "world" + (i === wi ? " on" : "") + (all ? " ok" : "");
+    b.innerHTML = '<span class="num">' + (all ? "✓" : i + 1) + '</span><span>' + w.n + '</span><small>' + n + '/' + w.r.length + '</small>';
+    b.onclick = () => { wi = i; ri = 0; save(); loadChallenge(); };
+    $("worlds").appendChild(b);
+  });
+
+  const allWorlds = [...ANALOG_WORLDS.map((w, i) => ({ t:"analog", i, w })), ...DIGITAL_WORLDS.map((w, i) => ({ t:"digital", i, w }))];
+  const totalChallenges = allWorlds.reduce((acc, item) => acc + item.w.r.length, 0);
+  $("stars").textContent = done.size;
+  $("level").textContent = 1 + Math.floor(done.size / 6);
+  $("ptxt").textContent = done.size + " de " + totalChallenges + " retos";
+  $("pfill").style.width = (done.size / totalChallenges * 100) + "%";
+
+  const earned = allWorlds.filter(item => item.w.r.every((_, j) => done.has(key(item.t, item.i, j))));
+  $("medals").innerHTML = earned.length
+    ? earned.map(item => '<span class="medal">★ ' + item.w.n + '</span>').join("")
+    : '<span class="empty">Completa los 3 retos de un mundo para ganar su medalla.</span>';
+  $("mcount").textContent = earned.length + " de " + allWorlds.length;
+}
+
+function renderChips() {
+  const rList = listForTrack(track)[wi].r;
+  $("chips").innerHTML = "";
+  rList.forEach((ch, j) => {
+    const b = document.createElement("button");
+    b.className = "chip" + (j === ri ? " on" : "") + (done.has(key(track, wi, j)) ? " ok" : "");
+    b.textContent = "Reto " + (j + 1) + " · " + ch.t + (done.has(key(track, wi, j)) ? " ✓" : "");
+    b.onclick = () => { ri = j; save(); loadChallenge(); };
+    $("chips").appendChild(b);
+  });
+}
+
+function loadChallenge() {
+  const w = listForTrack(track)[wi], ch = w.r[ri];
+  st = Object.assign({
+    swA:0, res:330, topo: track === "digital" ? "gates" : "single", load:"led", pol:1,
+    ra:300, rb:300, rc:300, ry1:100, ry2:100, ry3:100,
+    r1:330, r2:330, vth:2.5, rth:165,
+    iset:15, rload:220, capUf:100, vc:0, freq:100, vout:0,
+    ib:0, vin:0.2, gain:4, vgs:0, stype:"temp", sval:25, duty:50, vref:2.5,
+    powerMw:0, curr:0, ledOn:false, y:0,
+    a:0, b:0, gate:"AND", b3:0, b2:0, b1:0, b0:0, binVal:0,
+    q:0, cnt:0, dir:1, digit:0, sum:0, carry:0
+  }, ch.init);
+
+  $("mt").textContent = w.n;
+  $("md").textContent = w.d;
+  $("lvl").textContent = w.level;
+  $("goal").innerHTML = "<b>Reto " + (ri + 1) + " · " + ch.t + ":</b> " + ch.g;
+  $("hint").textContent = "";
+  $("feedback").className = "feedback";
+  $("feedback").textContent = "Ajusta los controles y pulsa «Comprobar reto».";
+
+  renderWorlds();
+  renderChips();
+  renderControls();
+  renderTruthTable();
+  drawBench();
+}
+
+function setTrack(nextTrack) {
+  if (track === nextTrack) return;
+  track = nextTrack;
+  wi = 0;
+  ri = 0;
+  save();
+  $("tabAnalog").classList.toggle("on", track === "analog");
+  $("tabDigital").classList.toggle("on", track === "digital");
+  loadChallenge();
+}
+
+$("tabAnalog").onclick = () => setTrack("analog");
+$("tabDigital").onclick = () => setTrack("digital");
+
+$("checkBtn").onclick = () => {
+  const s = computeState();
+  const ch = listForTrack(track)[wi].r[ri];
+  const fb = $("feedback");
+
+  if (track === "analog" && s.ledOn && s.curr > 35) {
+    fb.className = "feedback crit";
+    fb.textContent = "¡Alerta de corriente! Flujo de " + s.curr.toFixed(1) + " mA por baja resistencia (" + st.res + " Ω). Sube R a >= 220 Ω para limitar el flujo.";
+    return;
+  }
+
+  if (ch.ok(s)) {
+    const first = !done.has(key(track, wi, ri));
+    done.add(key(track, wi, ri));
+    save();
+    renderWorlds();
+    renderChips();
+    fb.className = "feedback ok";
+    fb.textContent = "🎉 " + ch.msg + (first ? " (+1 estrella)" : "");
+    const g = $("goal"); g.classList.remove("win"); void g.offsetWidth; g.classList.add("win");
+  } else {
+    fb.className = "feedback warn";
+    fb.textContent = "Aún no cumple el objetivo del reto. Revisa el enunciado o pulsa «Pista».";
+  }
+};
+
+$("hintBtn").onclick = () => {
+  $("hint").textContent = "💡 " + listForTrack(track)[wi].r[ri].h;
+};
+
+$("resetBtn").onclick = () => loadChallenge();
+$("flowck").onchange = e => { flowAnim = e.target.checked; drawBench(); };
+
+$("tabAnalog").classList.toggle("on", track === "analog");
+$("tabDigital").classList.toggle("on", track === "digital");
+loadChallenge();
+requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
