@@ -131,6 +131,35 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 
 @media(max-width:1040px){.work{grid-template-columns:1fr}}
 @media(max-width:860px){.layout{grid-template-columns:1fr}.worlds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));max-height:none}.pills{display:none}}
+
+/* Laboratorio libre: constructor de circuitos */
+.labfree{margin-top:16px}
+.labfree .labintro{color:var(--mut);margin:0 0 14px}
+.labgrid{display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px}
+.labtools,.labview{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:13px;min-width:0}
+.labtools h3,.labview h3{margin:0 0 10px;font-size:14px}
+.labfield{display:grid;gap:5px;margin:9px 0}
+.labfield label{font-size:12px;font-weight:700;color:var(--mut)}
+.labfield select,.labfield input{width:100%;border:1px solid var(--line);border-radius:9px;background:var(--card);padding:8px;color:var(--ink)}
+.labactions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.labbtn{border:1px solid var(--line);background:var(--card);border-radius:9px;padding:8px 11px;font-weight:700;font-size:12px;color:var(--ink)}
+.labbtn.primary{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+.labbtn.danger{color:#b91c1c}
+.labcanvas{background:#fbfdff;border:1px solid #d7e4f1;border-radius:12px;overflow:hidden;min-height:300px}
+#freeCircuit{display:block;width:100%;height:auto;min-height:300px}
+.labstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+.labstat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px}
+.labstat small{display:block;color:var(--mut);font-size:11px}
+.labstat b{font:700 13px ui-monospace,monospace}
+.labparts{display:grid;gap:6px;margin-top:12px}
+.labpart{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:9px;padding:7px 9px;font-size:12px}
+.labpart button{border:0;background:transparent;color:#b91c1c;font-weight:800;font-size:16px}
+.labnote{font-size:12px;color:var(--mut);margin:10px 0 0}
+.labstatus{margin-top:10px;padding:9px 11px;border-radius:10px;background:var(--card);font-size:13px;border:1px solid var(--line)}
+.labstatus.ok{border-color:#86c5a2;background:#effaf3;color:#17643a}
+.labstatus.warn{border-color:#efc77c;background:#fff8e8;color:#87520b}
+@media(max-width:800px){.labgrid{grid-template-columns:1fr}.labstats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 </style>
 </head>
 <body>
@@ -205,6 +234,42 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
           </div>
         </section>
       </div>
+
+
+      <section class="card labfree" id="freeLab">
+        <div class="ph"><h2>🔧 Constructor libre · Laboratorio real</h2><span>Simulación DC interactiva</span></div>
+        <p class="labintro">Construye circuitos conectando nodos, cambia componentes y pulsa Simular. Los voltajes y corrientes se calculan a partir de la red que armaste; no son valores decorativos.</p>
+        <div class="labgrid">
+          <div class="labtools">
+            <h3>Agregar componente</h3>
+            <div class="labfield"><label for="partType">Componente</label><select id="partType">
+              <option value="R">Resistencia</option><option value="LED">LED</option><option value="LAMP">Bombillo</option><option value="MOTOR">Motor DC</option><option value="SW">Interruptor</option><option value="WIRE">Cable</option>
+            </select></div>
+            <div class="labfield"><label for="nodeA">Terminal A</label><select id="nodeA"><option>VCC</option><option>N1</option><option>N2</option><option>N3</option><option>GND</option></select></div>
+            <div class="labfield"><label for="nodeB">Terminal B</label><select id="nodeB"><option>GND</option><option>N1</option><option>N2</option><option>N3</option><option>VCC</option></select></div>
+            <div class="labfield" id="partValueWrap"><label for="partValue">Valor (Ω)</label><input id="partValue" type="number" min="1" max="100000" value="330"></div>
+            <div class="labfield" id="switchValueWrap" hidden><label for="switchState">Interruptor</label><select id="switchState"><option value="1">Cerrado</option><option value="0">Abierto</option></select></div>
+            <div class="labactions"><button class="labbtn primary" id="addPart">＋ Agregar</button><button class="labbtn" id="simulateFree">▶ Simular</button></div>
+            <div class="labfield"><label for="templateSelect">Circuito de ejemplo</label><select id="templateSelect">
+              <option value="led">LED con resistencia</option><option value="series">Dos resistencias en serie</option><option value="parallel">Dos ramas en paralelo</option><option value="divider">Divisor de tensión</option><option value="motor">Motor con interruptor</option><option value="short">Cortocircuito controlado (solo simulación)</option>
+            </select></div>
+            <div class="labactions"><button class="labbtn" id="loadTemplate">Cargar ejemplo</button><button class="labbtn danger" id="clearFree">Vaciar circuito</button></div>
+            <p class="labnote">La fuente virtual entrega 5 V entre VCC y GND. N1, N2 y N3 son puntos de conexión. Para completar un circuito, crea un camino cerrado entre ambos terminales de la fuente.</p>
+          </div>
+          <div class="labview">
+            <h3>Esquema eléctrico</h3>
+            <div class="labcanvas"><svg id="freeCircuit" viewBox="0 0 760 360" role="img" aria-label="Esquema del circuito construido"></svg></div>
+            <div class="labstats">
+              <div class="labstat"><small>Voltaje en N1</small><b id="freeV1">— V</b></div>
+              <div class="labstat"><small>Voltaje en N2</small><b id="freeV2">— V</b></div>
+              <div class="labstat"><small>Corriente total</small><b id="freeI">— mA</b></div>
+              <div class="labstat"><small>Potencia total</small><b id="freeP">— mW</b></div>
+            </div>
+            <div class="labstatus" id="freeStatus" aria-live="polite">Agrega componentes o carga un circuito de ejemplo para comenzar.</div>
+            <div class="labparts" id="freeParts"></div>
+          </div>
+        </div>
+      </section>
 
       <section class="card">
         <div class="ph"><h2>Medallas ganadas</h2><span id="mcount">0 de 40</span></div>
@@ -1241,6 +1306,117 @@ $("hintBtn").onclick = () => {
 
 $("resetBtn").onclick = () => loadChallenge();
 $("flowck").onchange = e => { flowAnim = e.target.checked; drawBench(); };
+
+
+/* ================= CONSTRUCTOR LIBRE + SOLVER NODAL DC ================= */
+const freeParts = [];
+let freeId = 0;
+const freeNodeXY = {VCC:[90,75],N1:[285,75],N2:[475,75],N3:[475,275],GND:[90,275]};
+const freeEsc = v => String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function freeAdd(type,a,b,value=330,closed=1){
+  if(a===b){freeMessage("Un componente necesita dos nodos diferentes.","warn");return;}
+  freeParts.push({id:++freeId,type,a,b,value:Math.max(1,+value||330),closed:+closed});
+  freeRender(); freeSimulate();
+}
+function freeMessage(msg,kind=""){const el=$("freeStatus");if(el){el.className="labstatus "+kind;el.textContent=msg;}}
+function freeRender(){
+  const svg=$("freeCircuit"); if(!svg)return;
+  let out='<defs><pattern id="freeGrid" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#dce7f1"/></pattern></defs><rect width="760" height="360" fill="url(#freeGrid)"/>';
+  // Rail/fuente fija
+  out+='<path d="M90 75 V145 M90 205 V275" stroke="#c24b4b" stroke-width="4" fill="none"/><path d="M90 75 H285" stroke="#c24b4b" stroke-width="3" stroke-dasharray="5 5"/>';
+  out+='<circle cx="90" cy="75" r="8" fill="#d94b4b"/><circle cx="90" cy="275" r="8" fill="#26384a"/>';
+  out+='<text x="35" y="55" font-size="15" font-weight="bold" fill="#b33">VCC +5V</text><text x="35" y="305" font-size="15" font-weight="bold" fill="#26384a">GND 0V</text>';
+  const entries=freeParts.map((p,i)=>{
+    const [x1,y1]=freeNodeXY[p.a], [x2,y2]=freeNodeXY[p.b];
+    const mx=(x1+x2)/2,my=(y1+y2)/2;
+    let path=`M${x1} ${y1} L${mx-36} ${my} M${mx+36} ${my} L${x2} ${y2}`;
+    if(p.type==="WIRE") path=`M${x1} ${y1} L${x2} ${y2}`;
+    out+=`<path d="${path}" stroke="#55728e" stroke-width="3" fill="none"/>`;
+    if(p.type==="R") out+=`<path d="M${mx-36} ${my} l9 -10 12 20 12 -20 12 20 12 -20 12 10" stroke="#2563a6" stroke-width="3" fill="none"/><text x="${mx}" y="${my-24}" text-anchor="middle" font-size="13" fill="#173b5b">R ${p.value}Ω</text>`;
+    else if(p.type==="LED") out+=`<path d="M${mx-13} ${my-14} L${mx+13} ${my} L${mx-13} ${my+14} Z M${mx+17} ${my-15} V${my+15}" fill="#f9d96b" stroke="#765a16" stroke-width="2"/><text x="${mx}" y="${my-25}" text-anchor="middle" font-size="13" fill="#173b5b">LED</text>`;
+    else if(p.type==="LAMP") out+=`<circle cx="${mx}" cy="${my}" r="17" fill="#fff1a8" stroke="#9b7a20" stroke-width="2"/><path d="M${mx-9} ${my-9}l18 18m0 -18l-18 18" stroke="#9b7a20" stroke-width="2"/><text x="${mx}" y="${my-25}" text-anchor="middle" font-size="13" fill="#173b5b">Bombillo</text>`;
+    else if(p.type==="MOTOR") out+=`<circle cx="${mx}" cy="${my}" r="18" fill="#d9e9fa" stroke="#245b8c" stroke-width="2"/><text x="${mx}" y="${my+5}" text-anchor="middle" font-size="14" font-weight="bold" fill="#245b8c">M</text><text x="${mx}" y="${my-25}" text-anchor="middle" font-size="13" fill="#173b5b">Motor</text>`;
+    else if(p.type==="SW") out+=`<circle cx="${mx-14}" cy="${my}" r="4" fill="#fff" stroke="#245b8c" stroke-width="2"/><circle cx="${mx+14}" cy="${my}" r="4" fill="#fff" stroke="#245b8c" stroke-width="2"/><path d="M${mx-14} ${my} L${mx+14} ${p.closed?my:my-17}" stroke="#245b8c" stroke-width="3"/><text x="${mx}" y="${my-25}" text-anchor="middle" font-size="13" fill="#173b5b">SW ${p.closed?"ON":"OFF"}</text>`;
+    const [ax,ay]=freeNodeXY[p.a],[bx,by]=freeNodeXY[p.b];
+    out+=`<circle cx="${ax}" cy="${ay}" r="6" fill="#fff" stroke="#245b8c" stroke-width="2"/><circle cx="${bx}" cy="${by}" r="6" fill="#fff" stroke="#245b8c" stroke-width="2"/>`;
+  });
+  Object.entries(freeNodeXY).forEach(([n,[x,y]])=>{out+=`<text x="${x}" y="${y+(y<100?-16:28)}" text-anchor="middle" font-size="13" font-weight="bold" fill="#334e68">${n}</text>`;});
+  if(!freeParts.length)out+='<text x="380" y="180" text-anchor="middle" font-size="18" fill="#71869a">Tu circuito aparecerá aquí</text>';
+  svg.innerHTML=out;
+  const box=$("freeParts");
+  box.innerHTML=freeParts.length?freeParts.map(p=>`<div class="labpart"><span><b>${freeEsc(p.type)}</b> · ${p.a} → ${p.b}${p.type==="R"?" · "+p.value+" Ω":p.type==="SW"?(p.closed?" · cerrado":" · abierto"):""}</span><button data-free-del="${p.id}" aria-label="Eliminar componente">×</button></div>`).join(""):'<span class="empty">Todavía no hay componentes.</span>';
+  box.querySelectorAll("[data-free-del]").forEach(b=>b.onclick=()=>{const i=freeParts.findIndex(p=>p.id===+b.dataset.freeDel);if(i>=0)freeParts.splice(i,1);freeRender();freeSimulate();});
+}
+function freeSolve(){
+  const unknown=["N1","N2","N3"], fixed={VCC:5,GND:0}, n=unknown.length;
+  let volts={...fixed,N1:0,N2:0,N3:0};
+  const active=freeParts.filter(p=>p.type!=="WIRE");
+  // Las uniones WIRE se resuelven como una conductancia muy alta.
+  const branches=freeParts.map(p=>({...p,ohms:p.type==="R"?p.value:p.type==="LED"?30:p.type==="LAMP"?80:p.type==="MOTOR"?35:p.type==="SW"?(p.closed?0.05:1e9):0.001,drop:p.type==="LED"?2:0}));
+  // LED aproximado por iteración: si no está polarizado, se modela como abierto.
+  for(let pass=0;pass<5;pass++){
+    const G=Array.from({length:n},()=>Array(n+1).fill(0));
+    branches.forEach(p=>{
+      if(p.type==="WIRE")p.ohms=.001;
+      if(p.type==="LED"){
+        const va=volts[p.a]??0,vb=volts[p.b]??0;
+        p.ohms=(va-vb)>1.7?30:1e9;
+      }
+      const g=1/Math.max(.001,p.ohms),a=p.a,b=p.b;
+      if(unknown.includes(a)){const i=unknown.indexOf(a);G[i][i]+=g;if(unknown.includes(b))G[i][unknown.indexOf(b)]-=g;else G[i][n]+=g*(fixed[b]??0)+g*(p.type==="LED"&&p.ohms<1e8?2:0);}
+      if(unknown.includes(b)){const i=unknown.indexOf(b);G[i][i]+=g;if(unknown.includes(a))G[i][unknown.indexOf(a)]-=g;else G[i][n]+=g*(fixed[a]??0)-g*(p.type==="LED"&&p.ohms<1e8?2:0);}
+    });
+    // regularización numérica muy pequeña
+    for(let i=0;i<n;i++)G[i][i]+=1e-10;
+    for(let i=0;i<n;i++){
+      let pivot=i;for(let r=i+1;r<n;r++)if(Math.abs(G[r][i])>Math.abs(G[pivot][i]))pivot=r;
+      [G[i],G[pivot]]=[G[pivot],G[i]];
+      const d=G[i][i];if(Math.abs(d)<1e-12)continue;
+      for(let c=i;c<=n;c++)G[i][c]/=d;
+      for(let r=0;r<n;r++)if(r!==i){const f=G[r][i];for(let c=i;c<=n;c++)G[r][c]-=f*G[i][c];}
+    }
+    unknown.forEach((k,i)=>volts[k]=Number.isFinite(G[i][n])?G[i][n]:0);
+  }
+  let supply=0,power=0,detail=[];
+  branches.forEach(p=>{
+    const va=volts[p.a]??fixed[p.a]??0,vb=volts[p.b]??fixed[p.b]??0;
+    let current=(va-vb)/Math.max(.001,p.ohms);
+    if(p.type==="LED"&&p.ohms>1e8)current=0;
+    if(p.type==="WIRE"&&Math.abs(va-vb)<.05)current=(va-vb)/.001;
+    if(p.a==="VCC")supply+=current;
+    if(p.b==="VCC")supply-=current;
+    power+=Math.abs(current*(va-vb));
+    detail.push({id:p.id,current,va,vb});
+  });
+  return {volts,current:Math.abs(supply),power,detail};
+}
+function freeSimulate(){
+  if(!freeParts.length){["freeV1","freeV2","freeI","freeP"].forEach(id=>$(id).textContent="—");freeMessage("Agrega componentes para calcular el circuito.");return;}
+  const r=freeSolve();
+  $("freeV1").textContent=r.volts.N1.toFixed(2)+" V";$("freeV2").textContent=r.volts.N2.toFixed(2)+" V";
+  $("freeI").textContent=(r.current*1000).toFixed(2)+" mA";$("freeP").textContent=(r.power*1000).toFixed(1)+" mW";
+  const short=freeParts.some(p=>p.type==="WIRE"&&((p.a==="VCC"&&p.b==="GND")||(p.b==="VCC"&&p.a==="GND")));
+  if(short||r.current>.5)freeMessage("¡Atención! La corriente es elevada. Revisa el camino entre VCC y GND y agrega una resistencia limitadora.","warn");
+  else if(r.current<1e-5)freeMessage("No hay un camino cerrado de corriente. Revisa las conexiones o el interruptor.","warn");
+  else freeMessage("Circuito resuelto. Los voltajes de los nodos y la corriente total corresponden a la red conectada.","ok");
+}
+function freeLoadTemplate(name){
+  freeParts.length=0;freeId=0;
+  if(name==="led"){freeAdd("R","VCC","N1",330);freeAdd("LED","N1","GND");}
+  if(name==="series"){freeAdd("R","VCC","N1",220);freeAdd("R","N1","GND",330);}
+  if(name==="parallel"){freeAdd("R","VCC","N1",330);freeAdd("R","N1","GND",470);freeAdd("R","VCC","N2",470);freeAdd("R","N2","GND",470);}
+  if(name==="divider"){freeAdd("R","VCC","N1",1000);freeAdd("R","N1","GND",1000);}
+  if(name==="motor"){freeAdd("SW","VCC","N1",330,1);freeAdd("MOTOR","N1","GND");}
+  if(name==="short"){freeAdd("WIRE","VCC","GND");}
+  freeRender();freeSimulate();
+}
+$("partType").onchange=()=>{const t=$("partType").value;$("partValueWrap").hidden=!["R"].includes(t);$("switchValueWrap").hidden=t!=="SW";};
+$("addPart").onclick=()=>freeAdd($("partType").value,$("nodeA").value,$("nodeB").value,$("partValue").value,$("switchState").value);
+$("simulateFree").onclick=freeSimulate;
+$("clearFree").onclick=()=>{freeParts.length=0;freeRender();freeSimulate();};
+$("loadTemplate").onclick=()=>freeLoadTemplate($("templateSelect").value);
+freeLoadTemplate("led");
+
 
 $("tabAnalog").classList.toggle("on", track === "analog");
 $("tabDigital").classList.toggle("on", track === "digital");
